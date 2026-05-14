@@ -13,7 +13,6 @@ import argparse
 import concurrent.futures as cf
 import json
 import time
-from pathlib import Path
 
 import requests
 

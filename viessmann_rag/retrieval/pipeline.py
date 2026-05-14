@@ -33,8 +33,10 @@ def retrieve(
     queries = expand_query(question)
     log.info("Query expansion → %d variants", len(queries))
 
-    per_query_n = HYBRID_CANDIDATE_COUNT // max(len(queries), 1) * 2 \
-                  if len(queries) > 1 else HYBRID_CANDIDATE_COUNT
+    # With multiple variants we want a deeper pool per variant (recall trumps
+    # latency when the question crosses languages). The dedup step trims any
+    # overlap before diversify / rerank see the result.
+    per_query_n = HYBRID_CANDIDATE_COUNT if len(queries) == 1 else 30
 
     seen: set[str] = set()
     pool: list[dict] = []
