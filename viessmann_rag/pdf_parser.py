@@ -1,7 +1,7 @@
 """
 Layout-preserving PDF extraction for Viessmann technical docs.
 
-Approach (ported from ParkerJones/backend.py):
+Approach (ported from the ParkerJones project — kept unchanged on purpose):
   - pdfplumber `extract_text(layout=True)` to keep column whitespace
   - pdfplumber `extract_tables(lines_strict)` rendered as markdown
   - NO regex stripping. Numbers, model codes, units, tables all preserved.
@@ -10,6 +10,8 @@ One Page = one chunk. The chunk_text includes the layout text and, if any
 real tables (with ruling lines) exist, an appended `[TABLE n]` markdown
 block. Both views are valid; the LLM uses whichever serves the question.
 """
+from __future__ import annotations
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional

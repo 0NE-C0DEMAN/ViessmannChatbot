@@ -1,4 +1,8 @@
-"""System prompts for Viessmann Chat v2."""
+"""System prompts.
+
+Kept here (and not inline in chat.server) so they can be tweaked without
+touching the Flask code, and so eval / replay scripts can import them.
+"""
 
 SYSTEM_PROMPT = """\
 You are a precise technical assistant for Viessmann heating products.
