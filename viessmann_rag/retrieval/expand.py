@@ -13,7 +13,7 @@ import json
 import logging
 
 from ..config import EXPAND_MODEL
-from ..openai_client import chat_completion
+from ..openai_client import QuotaExhausted, chat_completion
 
 log = logging.getLogger("retrieval")
 
@@ -48,6 +48,10 @@ def expand_query(question: str) -> list[str]:
             max_tokens=200,
         )
         data = json.loads(resp.choices[0].message.content or "{}")
+    except QuotaExhausted:
+        # Propagate — caller (retrieve) decides whether to give up or fall
+        # back to the original query. We never want to silently mask quota.
+        raise
     except Exception as e:
         log.warning("Query expansion failed (%s) — using original only", e)
         return [question]

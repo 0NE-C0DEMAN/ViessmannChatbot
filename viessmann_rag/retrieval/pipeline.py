@@ -9,6 +9,7 @@ from ..config import (
     HYBRID_CANDIDATE_COUNT,
     RERANK_TOP_K,
 )
+from ..openai_client import QuotaExhausted
 from .diversify import diversify
 from .expand import expand_query
 from .rerank import rerank
@@ -44,6 +45,11 @@ def retrieve(
         try:
             chunks = hybrid_search(q, product_line, document_type,
                                    match_count=per_query_n)
+        except QuotaExhausted:
+            # Quota is global — every subsequent variant would also fail.
+            # Bubble up so the chat endpoint returns 503 with the right
+            # Croatian error message instead of a generic "not found".
+            raise
         except Exception as e:
             log.warning("hybrid_search failed for variant (%s): %s", q[:60], e)
             continue
