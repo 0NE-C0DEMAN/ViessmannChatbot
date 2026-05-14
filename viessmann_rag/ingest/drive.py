@@ -27,8 +27,14 @@ log = logging.getLogger("ingest")
 
 # ─── OAuth ─────────────────────────────────────────────────────────────────
 def get_drive_service() -> Any:
-    """OAuth on first run (opens browser); reuses google_token.json after."""
+    """OAuth on first run (opens browser); reuses google_token.json after.
+
+    If the cached refresh token has been revoked at Google's end (which
+    happens after extended inactivity or a manual app revocation), we fall
+    back to a fresh consent flow automatically instead of crashing.
+    """
     # Lazy-import so users who only run --dir don't need the google libs.
+    from google.auth.exceptions import RefreshError
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
@@ -40,23 +46,36 @@ def get_drive_service() -> Any:
             "and GOOGLE_ROOT_FOLDER_ID in .env"
         )
 
+    client_config = {
+        "installed": {
+            "client_id":     GOOGLE_CLIENT_ID,
+            "client_secret": GOOGLE_CLIENT_SECRET,
+            "redirect_uris": ["urn:ietf:wg:oauth:2.0:oob", "http://localhost"],
+            "auth_uri":      "https://accounts.google.com/o/oauth2/auth",
+            "token_uri":     "https://oauth2.googleapis.com/token",
+        }
+    }
+
     creds = None
     if GOOGLE_TOKEN_FILE.exists():
         creds = Credentials.from_authorized_user_file(GOOGLE_TOKEN_FILE, GOOGLE_SCOPES)
 
     if not creds or not creds.valid:
+        # Try a normal refresh first.
+        refreshed = False
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            client_config = {
-                "installed": {
-                    "client_id":     GOOGLE_CLIENT_ID,
-                    "client_secret": GOOGLE_CLIENT_SECRET,
-                    "redirect_uris": ["urn:ietf:wg:oauth:2.0:oob", "http://localhost"],
-                    "auth_uri":      "https://accounts.google.com/o/oauth2/auth",
-                    "token_uri":     "https://oauth2.googleapis.com/token",
-                }
-            }
+            try:
+                creds.refresh(Request())
+                refreshed = True
+            except RefreshError as e:
+                log.warning(
+                    "Cached refresh token is no longer valid (%s) — "
+                    "starting fresh OAuth consent flow.", e,
+                )
+                creds = None  # force fresh flow below
+
+        # Fresh consent flow (opens browser).
+        if not refreshed:
             flow = InstalledAppFlow.from_client_config(client_config, GOOGLE_SCOPES)
             creds = flow.run_local_server(port=0)
 
