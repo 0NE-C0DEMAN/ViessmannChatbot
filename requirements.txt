@@ -1,0 +1,17 @@
+# Backend
+flask>=3.0
+flask-cors>=4.0
+python-dotenv>=1.0
+requests>=2.30
+
+# LLM + embeddings
+openai>=1.0
+
+# PDF parsing
+pdfplumber>=0.11
+
+# Google Drive ingest (optional — only needed for `ingest.py --drive`)
+google-auth>=2.0
+google-auth-oauthlib>=1.0
+google-auth-httplib2>=0.2
+google-api-python-client>=2.0

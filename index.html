@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viessmann Tehnički Asistent · v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- ── Login Screen ─────────────────────────────────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <img
+      src="https://www.linear.eu/fileadmin/_processed_/a/e/csm_viessmann_wordmark_rgb_1_vitorange_f802ac8026.png"
+      alt="Viessmann"
+      class="login-logo"
+    />
+    <div class="login-title">Pristup sustavu</div>
+    <div class="login-subtitle">Tehnička dokumentacija · v2</div>
+
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginUsername">Korisničko ime</label>
+        <input type="text" id="loginUsername" autocomplete="username" required />
+      </div>
+      <div class="login-field">
+        <label for="loginPassword">Lozinka</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required />
+      </div>
+      <div class="login-error" id="loginError"></div>
+      <button type="submit" class="login-btn" id="loginBtn">Prijava</button>
+    </form>
+  </div>
+</div>
+
+<!-- ── Header ───────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="logo-area">
+    <img
+      src="https://www.linear.eu/fileadmin/_processed_/a/e/csm_viessmann_wordmark_rgb_1_vitorange_f802ac8026.png"
+      alt="Viessmann"
+      class="logo-img"
+    />
+  </div>
+  <div class="header-right">
+    <div class="header-badge">Tehnička dokumentacija · v2</div>
+    <button class="logout-btn" id="logoutBtn">Odjava</button>
+  </div>
+</header>
+
+<!-- ── Chat ─────────────────────────────────────────────────────────────────── -->
+<main>
+  <div id="messages">
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+      </div>
+      <h2>Tehnički Asistent</h2>
+      <p>Postavite pitanje o Viessmann proizvodima. Odgovori sadrže citate sa stranicama izvornih dokumenata.</p>
+      <div class="suggestions">
+        <button class="suggestion-btn" onclick="askSuggestion(this)">Koja je nominalna toplinska snaga Vitocal 100-S za sve varijante?</button>
+        <button class="suggestion-btn" onclick="askSuggestion(this)">Koji je dozvoljeni radni tlak Vitocal 100-S na ogrjevnoj strani?</button>
+        <button class="suggestion-btn" onclick="askSuggestion(this)">Koje rashladno sredstvo koristi tip AWB-M 101.B08?</button>
+        <button class="suggestion-btn" onclick="askSuggestion(this)">Koliko je SCOP za Vitocal 100-S 101.A12 pri W35?</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea
+        id="chatInput"
+        placeholder="Postavite tehničko pitanje o Viessmann proizvodima..."
+        rows="1"
+      ></textarea>
+      <button id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+        </svg>
+      </button>
+    </div>
+    <div class="input-footer">
+      <span class="input-hint">Pritisnite <kbd>Enter</kbd> za slanje, <kbd>Shift+Enter</kbd> za novi redak</span>
+      <span class="powered-by">Powered by <span>Viessmann</span> Docs · v2</span>
+    </div>
+  </div>
+</main>
+
+<script src="/static/chat.js"></script>
+</body>
+</html>
