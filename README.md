@@ -1,5 +1,9 @@
 # Viessmann RAG Chatbot
 
+[![Release](https://img.shields.io/github/v/release/0NE-C0DEMAN/ViessmannChatbot?display_name=tag&sort=semver)](https://github.com/0NE-C0DEMAN/ViessmannChatbot/releases)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 A retrieval-augmented chatbot over Viessmann technical PDFs (Vitocal heat
 pumps, Vitodens boilers). Answers technical questions from the documentation
 in Croatian or English and cites the exact page each fact comes from.
