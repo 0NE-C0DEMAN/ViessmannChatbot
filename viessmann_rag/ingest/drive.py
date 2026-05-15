@@ -228,8 +228,23 @@ def _diff_against_registry(
     return to_process, to_delete
 
 
-def run_once(service: Any) -> None:
-    """One full Drive scan + ingest pass."""
+def run_once(
+    service: Any,
+    *,
+    on_scan_done: Any = None,
+    on_file_start: Any = None,
+    on_file_done: Any = None,
+) -> None:
+    """One full Drive scan + ingest pass.
+
+    The optional `on_*` callbacks let an outer controller (progress.py)
+    broadcast events to UI subscribers. They're keyword-only and default
+    to None so the CLI entry point keeps working without a wrapper.
+
+        on_scan_done(found_count, to_process_count, to_delete_count)
+        on_file_start(file_name, idx, total)        # idx is 1-based
+        on_file_done(file_name, idx, total, ok)     # ok: bool
+    """
     log.info("=== Drive sync run ===")
 
     subfolders = list_subfolders(service, GOOGLE_ROOT_FOLDER_ID)  # type: ignore[arg-type]
@@ -248,37 +263,64 @@ def run_once(service: Any) -> None:
     log.info("To process: %d  |  To mark deleted: %d",
              len(to_process), len(to_delete))
 
+    if on_scan_done:
+        try:
+            on_scan_done(len(drive_files), len(to_process), len(to_delete))
+        except Exception as e:  # noqa: BLE001
+            log.warning("on_scan_done callback raised: %s", e)
+
     for reg in to_delete:
         log.info("  marking deleted: %s", reg.get("file_name", reg["file_id"]))
         mark_deleted(reg["file_id"])
 
-    for f in to_process:
+    total = len(to_process)
+    for idx, f in enumerate(to_process, start=1):
+        file_name = f.get("name", f["id"])
+        if on_file_start:
+            try:
+                on_file_start(file_name, idx, total)
+            except Exception as e:  # noqa: BLE001
+                log.warning("on_file_start callback raised: %s", e)
+
+        ok = True
         try:
             pdf_bytes = download_pdf(service, f["id"])
             process_pdf_bytes(
                 file_id=f["id"],
-                file_name=f.get("name", f["id"]),
+                file_name=file_name,
                 pdf_bytes=pdf_bytes,
                 md5=f.get("md5Checksum"),
             )
         except Exception as e:
-            log.error("✗ %s — %s", f.get("name"), e, exc_info=True)
+            log.error("✗ %s — %s", file_name, e, exc_info=True)
+            ok = False
+
+        if on_file_done:
+            try:
+                on_file_done(file_name, idx, total, ok)
+            except Exception as e:  # noqa: BLE001
+                log.warning("on_file_done callback raised: %s", e)
 
     log.info("=== Drive sync done ===\n")
 
 
-def ingest_drive(loop: bool = False) -> None:
-    """One-shot Drive sync, or continuous polling when `loop=True`."""
+def ingest_drive(loop: bool = False, **callbacks: Any) -> None:
+    """One-shot Drive sync, or continuous polling when `loop=True`.
+
+    `callbacks` are forwarded to `run_once` (on_scan_done / on_file_start /
+    on_file_done). Used by the CLI (no callbacks) and by the in-process
+    progress controller (all three set).
+    """
     service = get_drive_service()
 
     if not loop:
-        run_once(service)
+        run_once(service, **callbacks)
         return
 
     log.info("Loop mode: polling every %d seconds.", POLL_INTERVAL_SECONDS)
     while True:
         try:
-            run_once(service)
+            run_once(service, **callbacks)
         except Exception as e:
             log.error("Sync run failed: %s", e, exc_info=True)
         time.sleep(POLL_INTERVAL_SECONDS)

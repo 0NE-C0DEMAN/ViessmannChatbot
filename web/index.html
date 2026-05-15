@@ -46,9 +46,43 @@
   </div>
   <div class="header-right">
     <div class="header-badge">Tehnička dokumentacija · v2</div>
+    <button class="refresh-btn" id="refreshBtn" title="Sinkroniziraj s Google Drive" aria-label="Sinkroniziraj s Google Drive">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M4 4v5h.582m15.356 2A8.001 8.001 0 0 0 4.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 0 1-15.357-2m15.357 2H15" />
+      </svg>
+    </button>
     <button class="logout-btn" id="logoutBtn">Odjava</button>
   </div>
 </header>
+
+<!-- ── Manual sync modal (button-triggered, shows full progress) ────────────── -->
+<div id="ingestModal" class="ingest-modal" hidden>
+  <div class="ingest-modal-card">
+    <div class="ingest-modal-head">
+      <span class="ingest-modal-title">Sinkronizacija s Google Drive</span>
+      <button class="ingest-modal-close" id="ingestModalClose" hidden aria-label="Zatvori">×</button>
+    </div>
+    <div class="ingest-modal-body">
+      <div class="ingest-status" id="ingestStatus">Pretražujem…</div>
+      <div class="ingest-current" id="ingestCurrent"></div>
+      <div class="ingest-progress-wrap" id="ingestProgressWrap" hidden>
+        <div class="ingest-progress-bar" id="ingestProgressBar"></div>
+      </div>
+      <div class="ingest-counts" id="ingestCounts"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Auto-poll toast (only shown when new files surface) ──────────────────── -->
+<div id="ingestToast" class="ingest-toast" hidden>
+  <div class="ingest-toast-title">Sinkronizacija s Drive</div>
+  <div class="ingest-toast-current" id="ingestToastCurrent"></div>
+  <div class="ingest-progress-wrap">
+    <div class="ingest-progress-bar" id="ingestToastProgressBar"></div>
+  </div>
+  <div class="ingest-toast-counts" id="ingestToastCounts"></div>
+</div>
 
 <!-- ── Chat ─────────────────────────────────────────────────────────────────── -->
 <main>

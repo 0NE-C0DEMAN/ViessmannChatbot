@@ -129,6 +129,112 @@ header {
 }
 .logout-btn:hover { border-color: var(--red); color: var(--text); }
 
+/* ── Drive sync: refresh button ─────────────────────────────────────────── */
+.refresh-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 30px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; border-radius: 2px;
+  transition: all 0.2s;
+}
+.refresh-btn:hover { border-color: var(--red); color: var(--text); }
+.refresh-btn:disabled { opacity: 0.4; cursor: wait; }
+.refresh-btn.spinning svg { animation: refreshSpin 1s linear infinite; }
+@keyframes refreshSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Drive sync: progress bar (shared by modal + toast) ─────────────────── */
+.ingest-progress-wrap {
+  height: 4px; background: rgba(255,255,255,0.07);
+  border-radius: 2px; overflow: hidden;
+  margin: 10px 0;
+}
+.ingest-progress-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--red) 0%, #ff5562 100%);
+  transition: width 0.3s ease;
+}
+
+/* ── Drive sync: manual panel (non-blocking, top-right) ─────────────────── */
+/* No backdrop, no centering — sits in the same corner as the auto-poll
+   toast but slightly more prominent (border accent + close button) so the
+   user can still chat freely while a sync runs in the background. */
+.ingest-modal {
+  position: fixed; top: 80px; right: 24px; z-index: 160;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--red);
+  width: 340px;
+  padding: 14px 16px;
+  animation: slideInRight 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  pointer-events: auto;
+}
+.ingest-modal-card { /* legacy wrapper — keep transparent so old markup works */
+  background: transparent; border: none; padding: 0;
+}
+.ingest-modal-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px;
+}
+.ingest-modal-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text);
+}
+.ingest-modal-close {
+  background: transparent; border: none; color: var(--text-muted);
+  font-size: 18px; line-height: 1; cursor: pointer;
+  padding: 0 4px;
+}
+.ingest-modal-close:hover { color: var(--text); }
+.ingest-status {
+  font-size: 13px; color: var(--text);
+  margin-bottom: 2px;
+}
+.ingest-current {
+  font-size: 11px; color: var(--text-muted);
+  word-break: break-all; min-height: 16px;
+}
+.ingest-counts {
+  font-size: 10px; color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* ── Drive sync: toast (auto-poll, new files only) ──────────────────────── */
+.ingest-toast {
+  position: fixed; top: 80px; right: 24px; z-index: 150;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--red);
+  width: 320px;
+  padding: 14px 16px;
+  animation: slideInRight 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.ingest-toast-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text); margin-bottom: 6px;
+}
+.ingest-toast-current {
+  font-size: 12px; color: var(--text-muted);
+  word-break: break-all; min-height: 16px;
+}
+.ingest-toast-counts {
+  font-size: 11px; color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
 /* ── Main ───────────────────────────────────────────────────────────────── */
 main {
   flex: 1;

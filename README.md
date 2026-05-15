@@ -6,7 +6,7 @@ colorTo: gray
 sdk: docker
 app_port: 7860
 pinned: false
-short_description: RAG chatbot over Viessmann technical PDFs (Croatian / English)
+short_description: RAG over Viessmann technical PDFs (Croatian/English)
 ---
 
 # Viessmann RAG Chatbot

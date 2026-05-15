@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import json
 import logging
+import queue
+import threading
 import time
 from functools import wraps
 from typing import Any
@@ -60,6 +62,13 @@ def create_app() -> Flask:
     CORS(app, supports_credentials=True)
 
     _register_routes(app)
+
+    # Background Drive poller — runs inside this Flask process so the chat UI
+    # can subscribe to live progress events. Guarded internally; safe to call
+    # if create_app() is ever invoked more than once.
+    from ..ingest.progress import controller as ingest_controller
+    ingest_controller.start_background_poll()
+
     return app
 
 
@@ -374,6 +383,53 @@ def _register_routes(app: Flask) -> None:
                         mimetype="text/event-stream",
                         headers={"X-Accel-Buffering": "no",
                                  "Cache-Control": "no-cache"})
+
+    # ─── Drive ingest: status + manual trigger + live SSE events ───────
+    @app.get("/api/ingest/status")
+    @login_required
+    def ingest_status():
+        from ..ingest.progress import controller
+        return jsonify(controller.state)
+
+    @app.post("/api/ingest/poll")
+    @login_required
+    def ingest_poll():
+        """Kick off a Drive sync. Returns immediately; progress via SSE."""
+        from ..ingest.progress import controller
+        # Run in a daemon thread so the HTTP response doesn't block on the
+        # actual sync (which can take minutes when there are new PDFs).
+        threading.Thread(
+            target=controller.trigger_run, args=("manual",),
+            daemon=True, name="ManualDriveSync",
+        ).start()
+        return jsonify({"ok": True, "trigger": "manual"})
+
+    @app.get("/api/ingest/events")
+    @login_required
+    def ingest_events():
+        """SSE stream of progress events. One subscriber per browser tab."""
+        from ..ingest.progress import controller
+
+        def stream():
+            q = controller.subscribe()
+            try:
+                while True:
+                    try:
+                        event = q.get(timeout=25)
+                        yield _sse(event)
+                    except queue.Empty:
+                        # Comment line — keeps reverse-proxies from closing
+                        # the connection during quiet periods.
+                        yield ": heartbeat\n\n"
+            except GeneratorExit:
+                controller.unsubscribe(q)
+                raise
+
+        return Response(
+            stream_with_context(stream()),
+            mimetype="text/event-stream",
+            headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"},
+        )
 
     # ─── Frontend ──────────────────────────────────────────────────────
     @app.route("/")

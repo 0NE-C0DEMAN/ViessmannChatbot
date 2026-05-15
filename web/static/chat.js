@@ -12,9 +12,30 @@ const loginForm     = document.getElementById('loginForm');
 const loginError    = document.getElementById('loginError');
 const loginBtn      = document.getElementById('loginBtn');
 const logoutBtn     = document.getElementById('logoutBtn');
+const refreshBtn    = document.getElementById('refreshBtn');
+
+// Ingest progress UI
+const ingestModal           = document.getElementById('ingestModal');
+const ingestModalClose      = document.getElementById('ingestModalClose');
+const ingestStatusEl        = document.getElementById('ingestStatus');
+const ingestCurrentEl       = document.getElementById('ingestCurrent');
+const ingestProgressWrap    = document.getElementById('ingestProgressWrap');
+const ingestProgressBar     = document.getElementById('ingestProgressBar');
+const ingestCountsEl        = document.getElementById('ingestCounts');
+const ingestToast           = document.getElementById('ingestToast');
+const ingestToastCurrent    = document.getElementById('ingestToastCurrent');
+const ingestToastProgressBar= document.getElementById('ingestToastProgressBar');
+const ingestToastCounts     = document.getElementById('ingestToastCounts');
 
 let isLoading   = false;
 let chatHistory = [];
+
+// Drive ingest state
+let ingestEventSource = null;
+let manualRunActive   = false;   // user pressed refresh; show modal until done
+let autoToastVisible  = false;   // toast for auto-poll-with-new-files
+let modalHideTimer    = null;
+let toastHideTimer    = null;
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 async function checkAuth() {
@@ -24,8 +45,14 @@ async function checkAuth() {
     (d.logged_in ? showChat : showLogin)();
   } catch { showLogin(); }
 }
-function showLogin() { loginScreen.style.display = 'flex'; }
-function showChat()  { loginScreen.style.display = 'none'; }
+function showLogin() {
+  loginScreen.style.display = 'flex';
+  stopIngestEvents();
+}
+function showChat()  {
+  loginScreen.style.display = 'none';
+  startIngestEvents();
+}
 
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -56,6 +83,154 @@ logoutBtn.addEventListener('click', async () => {
   if (welcomeScreen) welcomeScreen.style.display = '';
   showLogin();
 });
+
+// ─── Drive sync: SSE events + manual trigger ────────────────────────────────
+function pctOf(idx, total) {
+  if (!total || total <= 0) return 0;
+  return Math.max(0, Math.min(100, (idx / total) * 100));
+}
+
+function showModal() {
+  if (modalHideTimer) { clearTimeout(modalHideTimer); modalHideTimer = null; }
+  manualRunActive = true;
+  ingestStatusEl.textContent = 'Pretražujem Google Drive…';
+  ingestCurrentEl.textContent = '';
+  ingestCountsEl.textContent  = '';
+  ingestProgressBar.style.width = '0%';
+  ingestProgressWrap.hidden = true;
+  // Always show the close button on the manual panel — user can dismiss
+  // anytime, the sync continues in the background.
+  ingestModalClose.hidden = false;
+  ingestModal.hidden = false;
+  // Avoid the manual panel + auto-toast piling up in the same corner.
+  hideToast();
+}
+function hideModal() {
+  manualRunActive = false;
+  ingestModal.hidden = true;
+}
+function showToast() {
+  // Defer to the manual panel if it's visible — keeps the top-right tidy.
+  if (manualRunActive) return;
+  if (toastHideTimer) { clearTimeout(toastHideTimer); toastHideTimer = null; }
+  autoToastVisible = true;
+  ingestToast.hidden = false;
+}
+function hideToast() {
+  autoToastVisible = false;
+  ingestToast.hidden = true;
+}
+
+function applyToModal(ev) {
+  if (ev.type === 'run_start') {
+    ingestStatusEl.textContent = 'Pretražujem Google Drive…';
+    ingestCurrentEl.textContent = '';
+    ingestCountsEl.textContent  = '';
+    ingestProgressBar.style.width = '0%';
+    ingestProgressWrap.hidden = true;
+  } else if (ev.type === 'scan_done') {
+    if ((ev.to_process || 0) === 0) {
+      ingestStatusEl.textContent = `Pretraženo ${ev.found} dokumenata. Nema novih.`;
+      ingestProgressWrap.hidden = true;
+    } else {
+      ingestStatusEl.textContent = `Pronađeno ${ev.to_process} novih. Generiram embeddinge…`;
+      ingestProgressWrap.hidden = false;
+    }
+    ingestCountsEl.textContent = `Skenirano: ${ev.found} · Novih: ${ev.to_process} · Obrisano: ${ev.to_delete}`;
+  } else if (ev.type === 'file_start') {
+    ingestCurrentEl.textContent = `${ev.idx}/${ev.total} · ${ev.file}`;
+    ingestProgressBar.style.width = pctOf(ev.idx - 1, ev.total) + '%';
+    ingestProgressWrap.hidden = false;
+  } else if (ev.type === 'file_done') {
+    ingestProgressBar.style.width = pctOf(ev.idx, ev.total) + '%';
+  } else if (ev.type === 'run_done') {
+    const n = ev.last_new_count || 0;
+    ingestStatusEl.textContent = n
+      ? `Gotovo. Dodano ${n} ${n === 1 ? 'dokument' : 'dokumenata'}.`
+      : 'Gotovo. Nema novih dokumenata.';
+    ingestCurrentEl.textContent = '';
+    if (n > 0) ingestProgressBar.style.width = '100%';
+    ingestModalClose.hidden = false;
+    modalHideTimer = setTimeout(hideModal, 3000);
+  } else if (ev.type === 'run_error') {
+    ingestStatusEl.textContent = 'Greška: ' + (ev.error || 'sinkronizacija nije uspjela');
+    ingestModalClose.hidden = false;
+  }
+}
+
+function applyToToast(ev) {
+  // Toast policy: only surface for auto-poll runs that produce NEW work.
+  if (ev.trigger !== 'auto') return;
+
+  if (ev.type === 'scan_done' && (ev.to_process || 0) > 0) {
+    showToast();
+    ingestToastCurrent.textContent = `${ev.to_process} ${ev.to_process === 1 ? 'nova datoteka' : 'novih datoteka'} pronađeno`;
+    ingestToastProgressBar.style.width = '0%';
+    ingestToastCounts.textContent = '';
+  } else if (ev.type === 'file_start' && autoToastVisible) {
+    ingestToastCurrent.textContent = `${ev.idx}/${ev.total} · ${ev.file}`;
+    ingestToastProgressBar.style.width = pctOf(ev.idx - 1, ev.total) + '%';
+  } else if (ev.type === 'file_done' && autoToastVisible) {
+    ingestToastProgressBar.style.width = pctOf(ev.idx, ev.total) + '%';
+  } else if (ev.type === 'run_done' && autoToastVisible) {
+    const n = ev.last_new_count || 0;
+    ingestToastCurrent.textContent = `Dodano ${n} ${n === 1 ? 'dokument' : 'dokumenata'}`;
+    ingestToastProgressBar.style.width = '100%';
+    toastHideTimer = setTimeout(hideToast, 4000);
+  }
+}
+
+function handleIngestEvent(ev) {
+  if (manualRunActive) applyToModal(ev);
+  applyToToast(ev);
+  // Spin the refresh button while any sync is in flight (manual or auto).
+  if (ev.type === 'run_start' || ev.type === 'scan_done' || ev.type === 'file_start') {
+    if (ev.status === 'scanning' || ev.status === 'processing') {
+      refreshBtn?.classList.add('spinning');
+    }
+  } else if (ev.type === 'run_done' || ev.type === 'run_error') {
+    refreshBtn?.classList.remove('spinning');
+  }
+}
+
+function startIngestEvents() {
+  if (ingestEventSource) return;
+  try {
+    ingestEventSource = new EventSource(`${API_BASE}/api/ingest/events`, { withCredentials: true });
+    ingestEventSource.onmessage = (e) => {
+      try {
+        const ev = JSON.parse(e.data);
+        handleIngestEvent(ev);
+      } catch (err) { console.error('ingest event parse error', err); }
+    };
+    ingestEventSource.onerror = () => { /* EventSource auto-reconnects */ };
+  } catch (err) {
+    console.error('Could not open ingest event stream', err);
+  }
+}
+function stopIngestEvents() {
+  if (ingestEventSource) { ingestEventSource.close(); ingestEventSource = null; }
+  refreshBtn?.classList.remove('spinning');
+}
+
+refreshBtn?.addEventListener('click', async () => {
+  refreshBtn.disabled = true;
+  showModal();
+  try {
+    const r = await fetch(`${API_BASE}/api/ingest/poll`, {
+      method: 'POST', credentials: 'include',
+    });
+    if (r.status === 401) { hideModal(); showLogin(); return; }
+  } catch (err) {
+    ingestStatusEl.textContent = 'Greška: ne mogu pokrenuti sinkronizaciju.';
+    ingestModalClose.hidden = false;
+    console.error(err);
+  } finally {
+    refreshBtn.disabled = false;
+  }
+});
+
+ingestModalClose?.addEventListener('click', hideModal);
 
 // ─── Chat input ──────────────────────────────────────────────────────────────
 inputEl.addEventListener('input', () => {

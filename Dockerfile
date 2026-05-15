@@ -33,19 +33,12 @@ RUN pip install --user --no-cache-dir -r requirements.txt
 # Layer 2: app source.
 COPY --chown=user:user . .
 
-ENV PORT=7860
+ENV PORT=7860 \
+    POLL_INTERVAL_SECONDS=120
 EXPOSE 7860
 
-# gunicorn + gthread workers — sync workers buffer responses, which breaks the
-# SSE streaming endpoint. gthread keeps the connection open and yields tokens
-# as they arrive. Single worker is fine for HF free-tier hardware; threads
-# handle concurrent SSE clients.
-CMD ["sh", "-c", "gunicorn \
-    --bind 0.0.0.0:${PORT:-7860} \
-    --workers 1 \
-    --threads 8 \
-    --worker-class gthread \
-    --timeout 300 \
-    --access-logfile - \
-    --error-logfile - \
-    'viessmann_rag.chat.server:create_app()'"]
+# docker-entrypoint.sh runs the Drive poller in the background (if configured)
+# and then execs gunicorn in the foreground. gthread workers — sync workers
+# buffer responses, which breaks the SSE streaming endpoint. gthread keeps
+# the connection open and yields tokens as they arrive.
+CMD ["sh", "docker-entrypoint.sh"]
