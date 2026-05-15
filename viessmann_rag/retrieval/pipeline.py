@@ -1,7 +1,14 @@
-"""End-to-end retrieval: question → expand → search × N → dedup → diversify → rerank."""
+"""End-to-end retrieval: question → expand → search × N → dedup → diversify → rerank.
+
+Pre-search stages (intent classification, query expansion, HyDE) run in
+parallel — they're independent and all involve OpenAI calls, so doing them
+sequentially wastes 2-4s per query. Same for the per-variant hybrid_search
+RPC calls: independent network round-trips that can be fanned out.
+"""
 from __future__ import annotations
 
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
 from ..config import (
@@ -29,24 +36,51 @@ def _search_variants(
     document_type: Optional[str],
     per_query_n: int,
 ) -> list[dict]:
-    """Run hybrid_search for each query variant, return deduped pool."""
-    seen: set[str] = set()
-    pool: list[dict] = []
-    for q in queries:
+    """Run hybrid_search for each query variant in parallel; return deduped pool.
+
+    Each variant search is an OpenAI embedding call + a Supabase RPC round
+    trip. They're independent, so we fan them out and merge.
+    """
+    if not queries:
+        return []
+    if len(queries) == 1:
         try:
-            chunks = hybrid_search(q, product_line, document_type,
-                                   match_count=per_query_n)
+            return hybrid_search(queries[0], product_line, document_type,
+                                 match_count=per_query_n)
         except QuotaExhausted:
             raise
         except Exception as e:
-            log.warning("hybrid_search failed for variant (%s): %s", q[:60], e)
-            continue
-        for c in chunks:
-            cid = c.get("chunk_id") or c.get("id")
-            if not cid or cid in seen:
+            log.warning("hybrid_search failed for variant (%s): %s",
+                        queries[0][:60], e)
+            return []
+
+    seen: set[str] = set()
+    pool: list[dict] = []
+    with ThreadPoolExecutor(max_workers=min(4, len(queries))) as ex:
+        future_to_q = {
+            ex.submit(hybrid_search, q, product_line, document_type, per_query_n): q
+            for q in queries
+        }
+        for fut in as_completed(future_to_q):
+            q = future_to_q[fut]
+            try:
+                chunks = fut.result()
+            except QuotaExhausted:
+                # Cancel pending searches and propagate — quota is global,
+                # subsequent searches would also fail.
+                for f in future_to_q:
+                    f.cancel()
+                raise
+            except Exception as e:
+                log.warning("hybrid_search failed for variant (%s): %s",
+                            q[:60], e)
                 continue
-            seen.add(cid)
-            pool.append(c)
+            for c in chunks:
+                cid = c.get("chunk_id") or c.get("id")
+                if not cid or cid in seen:
+                    continue
+                seen.add(cid)
+                pool.append(c)
     return pool
 
 
@@ -68,22 +102,57 @@ def retrieve(
     If `document_type` is passed explicitly by the caller, intent classification
     is bypassed (manual override).
     """
-    # 1. Intent — pick the doc_type to prefer (unless caller forced one)
+    # 1-2. Pre-search stages — run intent classifier, query expansion, and
+    #      (speculative) HyDE in parallel. We don't know whether HyDE applies
+    #      until intent comes back, so we fire it speculatively; if intent
+    #      ends up non-spec/capability we just discard it. Cost of the
+    #      occasional unused HyDE call is ~$0.0002, well worth ~1-2s saved.
+    intent: Optional[Intent] = None
+    queries: list[str] = []
+    hyde_result: Optional[str] = None
+
     if document_type is None:
-        intent = classify(question)
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            f_intent = ex.submit(classify, question)
+            f_expand = ex.submit(expand_query, question)
+            f_hyde   = ex.submit(hypothetical_doc, question)
+            try:
+                intent  = f_intent.result()
+                queries = f_expand.result()
+            except QuotaExhausted:
+                f_hyde.cancel()
+                raise
+            # Resolve HyDE only if its category needs it
+            if intent and intent.category in _HYDE_INTENTS:
+                try:
+                    hyde_result = f_hyde.result()
+                except QuotaExhausted:
+                    raise
+                except Exception as e:
+                    log.warning("HyDE resolve failed: %s", e)
+                    hyde_result = None
+            else:
+                f_hyde.cancel()
         log.info("Intent: %s  preferred=%s", intent.category, intent.preferred)
     else:
-        intent = None
-        log.info("Intent classification skipped (document_type=%r forced)", document_type)
+        # Caller forced document_type — skip intent classification, still
+        # parallelize expand + HyDE.
+        log.info("Intent classification skipped (document_type=%r forced)",
+                 document_type)
+        with ThreadPoolExecutor(max_workers=2) as ex:
+            f_expand = ex.submit(expand_query, question)
+            f_hyde   = ex.submit(hypothetical_doc, question)
+            try:
+                queries = f_expand.result()
+                hyde_result = f_hyde.result()
+            except QuotaExhausted:
+                raise
+            except Exception as e:
+                log.warning("Pre-search stage failed: %s", e)
 
-    # 2. Query expansion (+ HyDE for spec/capability questions)
-    queries = expand_query(question)
-    if intent and intent.category in _HYDE_INTENTS:
-        hyde = hypothetical_doc(question)
-        if hyde:
-            log.info("HyDE doc (%d chars) added for intent=%s",
-                     len(hyde), intent.category)
-            queries.append(hyde)
+    if hyde_result:
+        queries.append(hyde_result)
+        log.info("HyDE doc (%d chars) added", len(hyde_result))
     log.info("Query variants: %d", len(queries))
     per_query_n = HYBRID_CANDIDATE_COUNT if len(queries) == 1 else 30
 
