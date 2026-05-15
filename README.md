@@ -108,11 +108,37 @@ python ingest.py --drive
 python ingest.py --drive --loop
 ```
 
-On the first `--drive` run, a browser window opens for OAuth consent. The token
-is saved to `google_token.json` next to the script. Subsequent runs reuse it
-silently. **You can copy an existing `google_token.json` from a previous
-Viessmann project to skip the consent flow** — the OAuth scope is the same
+The `--drive` mode supports **two authentication options** — pick whichever
+fits your setup:
+
+#### Option A — Service Account *(recommended for production)*
+
+Create a service account in Google Cloud Console
+([instructions](https://console.cloud.google.com/iam-admin/serviceaccounts)),
+download its JSON key, and save it at the repository root as
+`google_service_account.json` (gitignored). Then **share your Drive root folder
+with the service account's `client_email`** (looks like
+`name@project.iam.gserviceaccount.com`).
+
+```powershell
+python ingest.py --drive       # uses the service account silently
+```
+
+No browser flow, no token expiry, no test-user limits. Best for headless
+servers and `--loop` mode.
+
+#### Option B — OAuth user *(browser consent flow)*
+
+If no `google_service_account.json` is present, the script falls back to
+OAuth. On first run, a browser window opens for consent. The token is saved
+to `google_token.json` next to the script and reused on subsequent runs.
+**You can copy an existing `google_token.json` from a previous Viessmann
+project** to skip the consent flow — the OAuth scope is the same
 (`drive.readonly`).
+
+If a cached refresh token is ever revoked by Google (typical after extended
+inactivity or app removal from your Google account), the script
+automatically falls back to a fresh consent flow on the next run.
 
 ### 5 — Run the chat server
 
@@ -178,9 +204,10 @@ documented template.
 | `CHAT_USERNAME`, `CHAT_PASSWORD` | yes | Login for the web UI |
 | `FLASK_SECRET_KEY` | yes | Any random string |
 | `CHAT_PORT` | optional | Default `8081` |
-| `GOOGLE_CLIENT_ID` | for `--drive` only | OAuth client (Desktop app) |
-| `GOOGLE_CLIENT_SECRET` | for `--drive` only | OAuth client secret |
-| `GOOGLE_ROOT_FOLDER_ID` | for `--drive` only | Root Drive folder — subfolders are scanned |
+| `GOOGLE_SERVICE_ACCOUNT_FILE` | for `--drive`, Option A | Path to service account JSON (default: `google_service_account.json`) |
+| `GOOGLE_CLIENT_ID` | for `--drive`, Option B | OAuth client (Desktop app) |
+| `GOOGLE_CLIENT_SECRET` | for `--drive`, Option B | OAuth client secret |
+| `GOOGLE_ROOT_FOLDER_ID` | for `--drive`, both modes | Root Drive folder — subfolders are scanned |
 | `POLL_INTERVAL_SECONDS` | optional | Default `60` — for `--drive --loop` |
 
 Retrieval / ingest tuning constants live in
@@ -236,9 +263,15 @@ raise your OpenAI usage tier if it's recurring.
 analysis, so a 15-MB installation manual can take 5–10 minutes. CPU-bound;
 run ingest on a beefier machine and point it at the same Supabase project.
 
-**Drive OAuth keeps re-prompting** — delete `google_token.json` and re-run.
-If the OAuth client was deleted from Google Cloud Console, you also need
-fresh `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` values.
+**Drive ingest reports 0 PDFs (service account mode)** — the Drive folder
+isn't shared with the service account's email. Open the folder in Drive,
+click *Share*, paste the `client_email` from `google_service_account.json`
+(looks like `name@project.iam.gserviceaccount.com`), grant Viewer access.
+
+**Drive OAuth re-prompts every run** — the cached refresh token was revoked
+at Google's end. The script handles this automatically by re-opening the
+consent flow. If the OAuth client itself was deleted from Google Cloud
+Console, you also need fresh `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
 
 **"column reference id is ambiguous" from the RPC** — old version of
 `search_chunks_v2` is still in your database. Re-run the migration (the

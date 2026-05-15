@@ -3,8 +3,11 @@
 .env.local
 .env.*.local
 
-# Google OAuth token (created on first --drive run)
+# Google credentials (NEVER commit either of these)
 google_token.json
+google_service_account.json
+*service_account*.json
+*service-account*.json
 
 # Python
 __pycache__/

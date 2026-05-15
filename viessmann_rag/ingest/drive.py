@@ -15,9 +15,11 @@ from ..config import (
     GOOGLE_CLIENT_SECRET,
     GOOGLE_ROOT_FOLDER_ID,
     GOOGLE_SCOPES,
+    GOOGLE_SERVICE_ACCOUNT_FILE,
     GOOGLE_TOKEN_FILE,
     POLL_INTERVAL_SECONDS,
     drive_configured,
+    service_account_configured,
 )
 from ..supabase_client import get_registry, mark_deleted
 from .pipeline import process_pdf_bytes
@@ -27,24 +29,51 @@ log = logging.getLogger("ingest")
 
 # ─── OAuth ─────────────────────────────────────────────────────────────────
 def get_drive_service() -> Any:
-    """OAuth on first run (opens browser); reuses google_token.json after.
+    """Return an authenticated Drive v3 service.
 
-    If the cached refresh token has been revoked at Google's end (which
-    happens after extended inactivity or a manual app revocation), we fall
-    back to a fresh consent flow automatically instead of crashing.
+    Two credential types are supported (in priority order):
+
+    1. **Service account** — if `google_service_account.json` exists next
+       to the script (or wherever `GOOGLE_SERVICE_ACCOUNT_FILE` points).
+       This is the preferred mode for production: no browser, no token
+       expiry, no test-user limits. The Drive folder MUST be shared with
+       the service account's `client_email` for it to see any files.
+
+    2. **OAuth user** — if no service account is configured, fall back to
+       `InstalledAppFlow`. Reuses `google_token.json` if present; opens a
+       browser for fresh consent if not (or if the cached refresh token
+       has been revoked at Google's end).
     """
     # Lazy-import so users who only run --dir don't need the google libs.
-    from google.auth.exceptions import RefreshError
-    from google.auth.transport.requests import Request
-    from google.oauth2.credentials import Credentials
-    from google_auth_oauthlib.flow import InstalledAppFlow
     from googleapiclient.discovery import build
 
     if not drive_configured():
         raise SystemExit(
-            "Drive mode requires GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, "
-            "and GOOGLE_ROOT_FOLDER_ID in .env"
+            "Drive mode requires either a service account JSON file OR "
+            "GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET in .env, plus "
+            "GOOGLE_ROOT_FOLDER_ID."
         )
+
+    if service_account_configured():
+        from google.oauth2 import service_account
+        log.info("Drive auth: service account (%s)", GOOGLE_SERVICE_ACCOUNT_FILE.name)
+        creds = service_account.Credentials.from_service_account_file(
+            str(GOOGLE_SERVICE_ACCOUNT_FILE),
+            scopes=GOOGLE_SCOPES,
+        )
+        return build("drive", "v3", credentials=creds)
+
+    return _get_drive_service_oauth_user(build)
+
+
+def _get_drive_service_oauth_user(build_fn) -> Any:
+    """OAuth user flow — `InstalledAppFlow` + cached `google_token.json`."""
+    from google.auth.exceptions import RefreshError
+    from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
+    from google_auth_oauthlib.flow import InstalledAppFlow
+
+    log.info("Drive auth: OAuth user flow")
 
     client_config = {
         "installed": {
@@ -72,7 +101,7 @@ def get_drive_service() -> Any:
                     "Cached refresh token is no longer valid (%s) — "
                     "starting fresh OAuth consent flow.", e,
                 )
-                creds = None  # force fresh flow below
+                creds = None
 
         # Fresh consent flow (opens browser).
         if not refreshed:
@@ -82,7 +111,7 @@ def get_drive_service() -> Any:
         GOOGLE_TOKEN_FILE.write_text(creds.to_json())
         log.info("Google token saved → %s", GOOGLE_TOKEN_FILE)
 
-    return build("drive", "v3", credentials=creds)
+    return build_fn("drive", "v3", credentials=creds)
 
 
 # ─── Drive listing helpers ─────────────────────────────────────────────────

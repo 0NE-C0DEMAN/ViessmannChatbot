@@ -53,12 +53,27 @@ GOOGLE_CLIENT_ID      = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET  = os.environ.get("GOOGLE_CLIENT_SECRET")
 GOOGLE_ROOT_FOLDER_ID = os.environ.get("GOOGLE_ROOT_FOLDER_ID")
 POLL_INTERVAL_SECONDS = int(os.environ.get("POLL_INTERVAL_SECONDS", 60))
-GOOGLE_TOKEN_FILE     = REPO_ROOT / "google_token.json"
-GOOGLE_SCOPES         = ["https://www.googleapis.com/auth/drive.readonly"]
+GOOGLE_TOKEN_FILE           = REPO_ROOT / "google_token.json"
+GOOGLE_SERVICE_ACCOUNT_FILE = REPO_ROOT / os.environ.get(
+    "GOOGLE_SERVICE_ACCOUNT_FILE", "google_service_account.json"
+)
+GOOGLE_SCOPES               = ["https://www.googleapis.com/auth/drive.readonly"]
+
+
+def service_account_configured() -> bool:
+    """True iff a service account JSON exists at GOOGLE_SERVICE_ACCOUNT_FILE."""
+    return GOOGLE_SERVICE_ACCOUNT_FILE.exists()
 
 
 def drive_configured() -> bool:
-    """True iff all required Drive vars are set. Used by ingest.cli."""
+    """True iff Drive ingest can be attempted with either credential type.
+
+    Service account requires only the JSON file (it contains client_id /
+    private_key) and a GOOGLE_ROOT_FOLDER_ID. OAuth user mode requires the
+    client_id / secret env vars too.
+    """
+    if service_account_configured() and GOOGLE_ROOT_FOLDER_ID:
+        return True
     return bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and GOOGLE_ROOT_FOLDER_ID)
 
 

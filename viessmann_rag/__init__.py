@@ -9,5 +9,5 @@ Public entry points:
 See README.md for setup, configuration, and architecture notes.
 """
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
