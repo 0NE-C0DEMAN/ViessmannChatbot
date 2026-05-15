@@ -143,6 +143,42 @@ function showTyping() {
 function hideTyping() { document.getElementById('typingIndicator')?.remove(); }
 function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; }
 
+/* Streaming helpers — mount a fresh assistant bubble to fill as tokens arrive. */
+function startStreamingMessage() {
+  if (welcomeScreen) welcomeScreen.style.display = 'none';
+  const div = document.createElement('div');
+  div.className = 'message assistant';
+  div.innerHTML = `
+    <div class="msg-avatar">AI</div>
+    <div class="msg-content">
+      <div class="msg-bubble streaming"></div>
+      <div class="sources-slot"></div>
+      <div class="msg-time">${getTime()}</div>
+    </div>`;
+  messagesEl.appendChild(div);
+  scrollToBottom();
+  return {
+    bubble:      div.querySelector('.msg-bubble'),
+    sourcesSlot: div.querySelector('.sources-slot'),
+  };
+}
+
+function renderSourcesInto(slot, sources) {
+  if (!sources || !sources.length) return;
+  const items = sources.map((s) => {
+    const page = s.page_number != null ? ` · p.${s.page_number}` : '';
+    const heading = s.section_heading ? ` — ${escapeHtml(s.section_heading)}` : '';
+    const table = s.has_table ? ' <span class="src-tag">table</span>' : '';
+    const rr = (s.rerank_score != null) ? `<span class="src-score">${s.rerank_score.toFixed(1)}</span>` : '';
+    return `<li>${rr}<span class="src-file">${escapeHtml(s.file_name || '')}${page}</span>${heading}${table}</li>`;
+  }).join('');
+  slot.innerHTML = `
+    <details class="sources" open>
+      <summary>${sources.length} izvor${sources.length === 1 ? '' : 'a'}</summary>
+      <ol>${items}</ol>
+    </details>`;
+}
+
 async function sendMessage() {
   const question = inputEl.value.trim();
   if (!question || isLoading) return;
@@ -153,8 +189,12 @@ async function sendMessage() {
   addUserMessage(question);
   showTyping();
 
+  let mount = null;          // { bubble, sourcesSlot } — created on first event
+  let answerBuf = '';
+  let sourcesBuf = [];
+
   try {
-    const r = await fetch(`${API_BASE}/api/chat`, {
+    const r = await fetch(`${API_BASE}/api/chat/stream`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -166,20 +206,57 @@ async function sendMessage() {
       }),
     });
     if (r.status === 401) { hideTyping(); showLogin(); return; }
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const d = await r.json();
-    hideTyping();
+    if (!r.ok && !r.body) throw new Error(`HTTP ${r.status}`);
 
-    const answer  = d.answer  || 'Nema odgovora.';
-    const sources = d.sources || [];
-    addAssistantMessage(answer, sources);
+    const reader = r.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf('\n\n')) !== -1) {
+        const raw = buf.slice(0, nl).trim();
+        buf = buf.slice(nl + 2);
+        if (!raw.startsWith('data:')) continue;
+        let ev;
+        try { ev = JSON.parse(raw.slice(5).trim()); } catch { continue; }
+
+        if (ev.type === 'sources') {
+          sourcesBuf = ev.sources || [];
+          if (!mount) { hideTyping(); mount = startStreamingMessage(); }
+          renderSourcesInto(mount.sourcesSlot, sourcesBuf);
+        } else if (ev.type === 'token') {
+          if (!mount) { hideTyping(); mount = startStreamingMessage(); }
+          answerBuf += ev.content || '';
+          mount.bubble.innerHTML = renderAnswer(answerBuf);
+          scrollToBottom();
+        } else if (ev.type === 'done') {
+          if (mount) mount.bubble.classList.remove('streaming');
+        } else if (ev.type === 'error') {
+          hideTyping();
+          addAssistantMessage(ev.error || 'Greška pri komunikaciji s asistentom.', [], true);
+          return;
+        }
+      }
+    }
+
+    if (!mount) {
+      hideTyping();
+      addAssistantMessage('Nema odgovora.', sourcesBuf, true);
+      return;
+    }
 
     chatHistory.push({ role: 'user',      content: question });
-    chatHistory.push({ role: 'assistant', content: answer });
+    chatHistory.push({ role: 'assistant', content: answerBuf || 'Nema odgovora.' });
     if (chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
   } catch (err) {
     hideTyping();
-    addAssistantMessage('Greška pri komunikaciji s asistentom. Pokušajte ponovo.', [], true);
+    if (!mount) {
+      addAssistantMessage('Greška pri komunikaciji s asistentom. Pokušajte ponovo.', [], true);
+    }
     console.error(err);
   } finally {
     isLoading = false; sendBtn.disabled = false; inputEl.focus();

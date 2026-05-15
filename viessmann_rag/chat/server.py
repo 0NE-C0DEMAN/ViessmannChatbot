@@ -3,21 +3,29 @@
 Routes:
   GET  /                  → frontend (index.html)
   GET  /static/*          → frontend assets
+  GET  /api/health        → version + uptime + cache stats (public)
   POST /api/login         → sets session cookie
   POST /api/logout        → clears session
   GET  /api/check-auth    → { logged_in: bool }
-  POST /api/chat          → { question, product_line?, document_type?, history? }
-                            → { answer, sources: [{file_name, page_number, ...}] }
+  POST /api/chat          → JSON: { question, history? } → { answer, sources }
+  POST /api/chat/stream   → SSE: emits 'sources' then 'token' events, ends with 'done'
 """
 from __future__ import annotations
 
+import json
 import logging
+import time
 from functools import wraps
 from typing import Any
 
-from flask import Flask, jsonify, request, send_from_directory, session
+from flask import (
+    Flask, Response, jsonify, request, send_from_directory, session,
+    stream_with_context,
+)
 from flask_cors import CORS
 
+from .. import __version__
+from ..cache import cache as query_cache
 from ..config import (
     CHAT_MODEL,
     CHAT_PASSWORD,
@@ -27,17 +35,18 @@ from ..config import (
     WEB_DIR,
 )
 from ..logging_setup import configure
-from ..openai_client import QuotaExhausted, chat_completion
+from ..metrics import record as metric
+from ..openai_client import QuotaExhausted, chat_completion, client as openai_client
 from ..prompts import NO_CONTEXT_REPLY, SYSTEM_PROMPT
 from ..retrieval import retrieve
 
 log = logging.getLogger("chat")
 
-
-# ─── Quota error helper ────────────────────────────────────────────────────
 _QUOTA_BODY = {
     "error": "OpenAI API kvota je iscrpljena. Molimo dodajte sredstva u OpenAI račun."
 }
+
+_STARTED_AT = time.time()
 
 
 # ─── App factory ───────────────────────────────────────────────────────────
@@ -64,7 +73,72 @@ def login_required(f):
     return w
 
 
+# ─── Shared retrieval-and-context build (used by both /api/chat variants) ──
+def _build_chat_context(d: dict) -> tuple[str, str, list, str, list, dict]:
+    """Pull params from request, run retrieval, build OpenAI messages.
+
+    Returns:
+        question, product_line, history, system_prompt, sources_meta, debug
+
+    `sources_meta` is the list of dicts we serialize back to the client.
+    `debug` carries fields for the metrics log.
+
+    Raises QuotaExhausted if retrieval can't complete.
+    Returns ([], ...) sources_meta if no chunks found — caller handles refusal.
+    """
+    question      = (d.get("question") or "").strip()
+    product_line  = d.get("product_line")  or None
+    document_type = d.get("document_type") or None
+    history       = d.get("history") or []
+    if not question:
+        raise ValueError("empty_question")
+
+    chunks = retrieve(question, product_line, document_type)
+    log.info("Retrieved %d chunks (post-rerank)", len(chunks))
+    for i, c in enumerate(chunks[:5]):
+        log.info(
+            "  [%d] %s p.%s  rr=%.2f  hyb=%.3f  table=%s",
+            i + 1, c.get("file_name"), c.get("page_number"),
+            c.get("rerank_score", 0), c.get("hybrid_score", 0),
+            c.get("has_table"),
+        )
+
+    sources_meta = [{
+        "file_name":       c.get("file_name"),
+        "page_number":     c.get("page_number"),
+        "section_heading": c.get("section_heading"),
+        "product_line":    c.get("product_line"),
+        "document_type":   c.get("document_type"),
+        "rerank_score":    round(c.get("rerank_score", 0), 2),
+        "hybrid_score":    round(c.get("hybrid_score", 0), 3),
+        "has_table":       c.get("has_table"),
+    } for c in chunks]
+
+    if not chunks:
+        return question, product_line, history, "", sources_meta, {
+            "retrieved": 0, "top_rerank": None,
+        }
+
+    context = "\n\n---\n\n".join(c["chunk_text"] for c in chunks)
+    user_msg = f"Dokumentacija (izvadci):\n\n{context}\n\nPitanje: {question}"
+
+    return question, product_line, history, user_msg, sources_meta, {
+        "retrieved":  len(chunks),
+        "top_rerank": round(chunks[0].get("rerank_score", 0), 2),
+    }
+
+
 def _register_routes(app: Flask) -> None:
+    # ─── Public: health ────────────────────────────────────────────────
+    @app.get("/api/health")
+    def health():
+        return jsonify({
+            "status":     "ok",
+            "version":    __version__,
+            "uptime_s":   int(time.time() - _STARTED_AT),
+            "cache":      query_cache.stats(),
+        })
+
     # ─── Auth ──────────────────────────────────────────────────────────
     @app.post("/api/login")
     def login():
@@ -87,51 +161,57 @@ def _register_routes(app: Flask) -> None:
     def check_auth():
         return jsonify({"logged_in": bool(session.get("logged_in"))})
 
-    # ─── Chat ──────────────────────────────────────────────────────────
+    # ─── Chat (non-streaming, JSON) ────────────────────────────────────
     @app.post("/api/chat")
     @login_required
     def chat():
+        t0 = time.time()
         d = request.get_json() or {}
-        question      = (d.get("question") or "").strip()
-        product_line  = d.get("product_line")  or None
-        document_type = d.get("document_type") or None
-        history       = d.get("history") or []
+        question = (d.get("question") or "").strip()
+        nocache  = bool(d.get("nocache"))
 
         if not question:
             return jsonify({"error": "Pitanje ne smije biti prazno."}), 400
+
+        # Cache lookup
+        cache_key = query_cache.make_key(
+            question, d.get("product_line"), d.get("document_type"),
+            d.get("history") or [],
+        )
+        if not nocache:
+            cached = query_cache.get(cache_key)
+            if cached:
+                log.info("Cache HIT for %s", cache_key[:12])
+                metric(
+                    latency_ms=int((time.time() - t0) * 1000),
+                    question=question, status=200, cache_hit=True,
+                    answer_len=len(cached.get("answer") or ""),
+                )
+                return jsonify(cached)
 
         log.info("Q: %s", question[:200])
 
         try:
             try:
-                chunks = retrieve(question, product_line, document_type)
+                q, _pl, history, user_msg, sources_meta, dbg = \
+                    _build_chat_context(d)
             except QuotaExhausted:
-                log.error("Quota exhausted on retrieve")
+                metric(latency_ms=int((time.time() - t0) * 1000),
+                       question=question, status=503, error="quota_exhausted")
                 return jsonify(_QUOTA_BODY), 503
 
-            log.info("Retrieved %d chunks (post-rerank)", len(chunks))
-            for i, c in enumerate(chunks[:5]):
-                log.info(
-                    "  [%d] %s p.%s  rr=%.2f  hyb=%.3f  sem=%.3f  kw=%.3f  table=%s",
-                    i + 1,
-                    c.get("file_name"),
-                    c.get("page_number"),
-                    c.get("rerank_score", 0),
-                    c.get("hybrid_score", 0),
-                    c.get("semantic_score", 0),
-                    c.get("keyword_score", 0),
-                    c.get("has_table"),
-                )
+            if not sources_meta:
+                resp_body = {"answer": NO_CONTEXT_REPLY, "sources": []}
+                query_cache.set(cache_key, resp_body)
+                metric(latency_ms=int((time.time() - t0) * 1000),
+                       question=question, status=200,
+                       retrieved=0, answer_len=len(NO_CONTEXT_REPLY))
+                return jsonify(resp_body)
 
-            if not chunks:
-                return jsonify({"answer": NO_CONTEXT_REPLY, "sources": []})
-
-            context = "\n\n---\n\n".join(c["chunk_text"] for c in chunks)
             messages = [
                 {"role": "system", "content": SYSTEM_PROMPT},
                 *history,
-                {"role": "user",
-                 "content": f"Dokumentacija (izvadci):\n\n{context}\n\nPitanje: {question}"},
+                {"role": "user", "content": user_msg},
             ]
 
             try:
@@ -140,30 +220,160 @@ def _register_routes(app: Flask) -> None:
                     temperature=0.1, max_tokens=900,
                 )
             except QuotaExhausted:
-                log.error("Quota exhausted on chat")
+                metric(latency_ms=int((time.time() - t0) * 1000),
+                       question=question, status=503, error="quota_exhausted")
                 return jsonify(_QUOTA_BODY), 503
 
             answer = resp.choices[0].message.content or NO_CONTEXT_REPLY
             log.info("Answer generated (%d chars)", len(answer))
 
-            sources = [{
-                "file_name":       c.get("file_name"),
-                "page_number":     c.get("page_number"),
-                "section_heading": c.get("section_heading"),
-                "product_line":    c.get("product_line"),
-                "document_type":   c.get("document_type"),
-                "rerank_score":    round(c.get("rerank_score", 0), 2),
-                "hybrid_score":    round(c.get("hybrid_score", 0), 3),
-                "has_table":       c.get("has_table"),
-            } for c in chunks]
+            resp_body = {"answer": answer, "sources": sources_meta}
+            query_cache.set(cache_key, resp_body)
 
-            return jsonify({"answer": answer, "sources": sources})
+            metric(
+                latency_ms=int((time.time() - t0) * 1000),
+                question=question, status=200,
+                retrieved=dbg["retrieved"], top_rerank=dbg["top_rerank"],
+                answer_len=len(answer),
+            )
+            return jsonify(resp_body)
 
         except Exception as e:
             log.error("Chat error: %s", e, exc_info=True)
+            metric(latency_ms=int((time.time() - t0) * 1000),
+                   question=question, status=500, error=type(e).__name__)
             return jsonify(
                 {"error": "Greška pri obradi pitanja. Pokušajte ponovo."}
             ), 500
+
+    # ─── Chat (streaming, SSE) ─────────────────────────────────────────
+    @app.post("/api/chat/stream")
+    @login_required
+    def chat_stream():
+        t0 = time.time()
+        d = request.get_json() or {}
+        question = (d.get("question") or "").strip()
+        nocache  = bool(d.get("nocache"))
+
+        if not question:
+            return jsonify({"error": "Pitanje ne smije biti prazno."}), 400
+
+        cache_key = query_cache.make_key(
+            question, d.get("product_line"), d.get("document_type"),
+            d.get("history") or [],
+        )
+
+        # If we have a cached result, stream it back as a single token block —
+        # gives the client a consistent SSE protocol regardless of cache state.
+        if not nocache:
+            cached = query_cache.get(cache_key)
+            if cached:
+                log.info("Cache HIT (stream) for %s", cache_key[:12])
+
+                def cached_stream():
+                    yield _sse({"type": "sources", "sources": cached["sources"]})
+                    yield _sse({"type": "token", "content": cached["answer"]})
+                    yield _sse({"type": "done", "cached": True})
+
+                metric(latency_ms=int((time.time() - t0) * 1000),
+                       question=question, status=200, cache_hit=True,
+                       answer_len=len(cached.get("answer") or ""))
+                return Response(stream_with_context(cached_stream()),
+                                mimetype="text/event-stream",
+                                headers={"X-Accel-Buffering": "no",
+                                         "Cache-Control": "no-cache"})
+
+        log.info("Q (stream): %s", question[:200])
+
+        # Build context up-front (retrieval is not streamed; only the answer is)
+        try:
+            try:
+                _q, _pl, history, user_msg, sources_meta, dbg = \
+                    _build_chat_context(d)
+            except QuotaExhausted:
+                metric(latency_ms=int((time.time() - t0) * 1000),
+                       question=question, status=503, error="quota_exhausted")
+
+                def quota_stream():
+                    yield _sse({"type": "error", **_QUOTA_BODY})
+                return Response(stream_with_context(quota_stream()),
+                                mimetype="text/event-stream", status=503)
+
+            if not sources_meta:
+                # No chunks — emit the refusal as a single token then done
+                resp_body = {"answer": NO_CONTEXT_REPLY, "sources": []}
+                query_cache.set(cache_key, resp_body)
+
+                def empty_stream():
+                    yield _sse({"type": "sources", "sources": []})
+                    yield _sse({"type": "token", "content": NO_CONTEXT_REPLY})
+                    yield _sse({"type": "done"})
+
+                metric(latency_ms=int((time.time() - t0) * 1000),
+                       question=question, status=200,
+                       retrieved=0, answer_len=len(NO_CONTEXT_REPLY))
+                return Response(stream_with_context(empty_stream()),
+                                mimetype="text/event-stream",
+                                headers={"X-Accel-Buffering": "no",
+                                         "Cache-Control": "no-cache"})
+
+            messages = [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                *history,
+                {"role": "user", "content": user_msg},
+            ]
+        except Exception as e:
+            log.error("Stream prep error: %s", e, exc_info=True)
+            metric(latency_ms=int((time.time() - t0) * 1000),
+                   question=question, status=500, error=type(e).__name__)
+
+            def err_stream():
+                yield _sse({"type": "error",
+                            "error": "Greška pri obradi pitanja. Pokušajte ponovo."})
+            return Response(stream_with_context(err_stream()),
+                            mimetype="text/event-stream", status=500)
+
+        def generate():
+            # 1. Sources event first
+            yield _sse({"type": "sources", "sources": sources_meta})
+
+            # 2. Token stream from OpenAI
+            collected: list[str] = []
+            try:
+                stream = openai_client.chat.completions.create(
+                    model=CHAT_MODEL, messages=messages,
+                    temperature=0.1, max_tokens=900, stream=True,
+                )
+                for chunk in stream:
+                    delta = (chunk.choices[0].delta.content
+                             if chunk.choices else None)
+                    if delta:
+                        collected.append(delta)
+                        yield _sse({"type": "token", "content": delta})
+            except QuotaExhausted:
+                yield _sse({"type": "error", **_QUOTA_BODY})
+                return
+            except Exception as e:
+                log.error("Stream OpenAI error: %s", e, exc_info=True)
+                yield _sse({"type": "error",
+                            "error": "Greška pri generiranju odgovora."})
+                return
+
+            answer = "".join(collected) or NO_CONTEXT_REPLY
+            # Cache the assembled answer for the next identical request
+            query_cache.set(cache_key, {"answer": answer, "sources": sources_meta})
+
+            metric(latency_ms=int((time.time() - t0) * 1000),
+                   question=question, status=200,
+                   retrieved=dbg["retrieved"], top_rerank=dbg["top_rerank"],
+                   answer_len=len(answer))
+
+            yield _sse({"type": "done"})
+
+        return Response(stream_with_context(generate()),
+                        mimetype="text/event-stream",
+                        headers={"X-Accel-Buffering": "no",
+                                 "Cache-Control": "no-cache"})
 
     # ─── Frontend ──────────────────────────────────────────────────────
     @app.route("/")
@@ -171,12 +381,19 @@ def _register_routes(app: Flask) -> None:
         return send_from_directory(str(WEB_DIR), "index.html")
 
 
+def _sse(payload: dict) -> str:
+    """Serialize a single Server-Sent Event."""
+    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
 # ─── Entry point ───────────────────────────────────────────────────────────
 def run() -> None:
     configure("chat")
-    log.info("Starting Viessmann Chat on http://localhost:%d", CHAT_PORT)
+    log.info("Starting Viessmann Chat v%s on http://localhost:%d",
+             __version__, CHAT_PORT)
     app = create_app()
-    app.run(host="0.0.0.0", port=CHAT_PORT, debug=False)
+    # threaded=True so SSE streams from multiple clients don't block each other
+    app.run(host="0.0.0.0", port=CHAT_PORT, debug=False, threaded=True)
 
 
 if __name__ == "__main__":

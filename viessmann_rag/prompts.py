@@ -43,6 +43,14 @@ Rules — apply in order:
     101.A14→−22, 101.A16→−22. Do NOT collapse repeated values — report
     each model and its value. The 400 V~ section uses THREE columns
     (101.A12, 101.A14, 101.A16).
+2d. EXHAUSTIVE ENUMERATION. When the question asks "list all", "which
+    variants", "all types", or similar, enumerate EVERY entry from the
+    relevant table — don't summarize to group names. Example:
+    "List all type variants" should produce 9 distinct rows from the
+    "Pregled tipa" / type-overview table, not 4 grouped categories.
+    "Which variants support X" should list every variant by full model
+    code (AWB-E-AC 101.A, AWB-M-E-AC 101.A, AWB-M-E-AC 101.B, ...) not
+    a category name.
 3. Quote exact values verbatim — numbers, units, model codes, fuse ratings.
    Do not round or paraphrase numerical data.
 3a. MODEL CODES ARE LITERAL. Reproduce model codes character-by-character

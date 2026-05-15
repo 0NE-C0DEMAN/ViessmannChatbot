@@ -240,6 +240,20 @@ main {
   border-left-color: #ff6b6b !important;
   color: #ff9999 !important;
 }
+
+/* Streaming cursor — pulses while tokens are arriving from the server */
+.msg-bubble.streaming::after {
+  content: '▍';
+  display: inline-block;
+  margin-left: 2px;
+  animation: cursorBlink 1s steps(2) infinite;
+  color: var(--red);
+  font-weight: 600;
+}
+@keyframes cursorBlink {
+  0%, 50%       { opacity: 1; }
+  50.01%, 100%  { opacity: 0; }
+}
 .msg-bubble code {
   background: var(--surface2); border: 1px solid var(--border);
   padding: 1px 6px; border-radius: 2px;

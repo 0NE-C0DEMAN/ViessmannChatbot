@@ -12,9 +12,13 @@ from ..config import (
 from ..openai_client import QuotaExhausted
 from .diversify import diversify
 from .expand import expand_query
-from .intent import classify
+from .hyde import hypothetical_doc
+from .intent import Intent, classify
 from .rerank import rerank
 from .search import hybrid_search
+
+# Intents that benefit from a HyDE query (cross-language question/answer gap)
+_HYDE_INTENTS = {"spec", "capability"}
 
 log = logging.getLogger("retrieval")
 
@@ -72,9 +76,15 @@ def retrieve(
         intent = None
         log.info("Intent classification skipped (document_type=%r forced)", document_type)
 
-    # 2. Query expansion
+    # 2. Query expansion (+ HyDE for spec/capability questions)
     queries = expand_query(question)
-    log.info("Query expansion → %d variants", len(queries))
+    if intent and intent.category in _HYDE_INTENTS:
+        hyde = hypothetical_doc(question)
+        if hyde:
+            log.info("HyDE doc (%d chars) added for intent=%s",
+                     len(hyde), intent.category)
+            queries.append(hyde)
+    log.info("Query variants: %d", len(queries))
     per_query_n = HYBRID_CANDIDATE_COUNT if len(queries) == 1 else 30
 
     # 3. First pass: search restricted to the primary preferred doc_type
