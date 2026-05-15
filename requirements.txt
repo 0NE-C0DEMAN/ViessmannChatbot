@@ -4,6 +4,11 @@ flask-cors>=4.0
 python-dotenv>=1.0
 requests>=2.30
 
+# Production WSGI server (used by the HF Spaces Docker image; gthread workers
+# preserve streaming for the SSE chat endpoint). Local dev still runs the
+# Flask dev server via `python chat_server.py`.
+gunicorn>=22.0
+
 # LLM + embeddings
 openai>=1.0
 

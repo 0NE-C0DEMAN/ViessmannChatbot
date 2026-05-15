@@ -46,7 +46,9 @@ CHAT_MODEL      = "gpt-4o"                   # final answer generation
 CHAT_USERNAME    = os.environ.get("CHAT_USERNAME", "viessmann")
 CHAT_PASSWORD    = os.environ.get("CHAT_PASSWORD", "carrier")
 FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "viessmann-rag-secret")
-CHAT_PORT        = int(os.environ.get("CHAT_PORT", 8081))
+# PORT (HF Spaces / generic PaaS standard) wins if set, otherwise CHAT_PORT,
+# otherwise 8081 for local dev.
+CHAT_PORT        = int(os.environ.get("PORT") or os.environ.get("CHAT_PORT") or 8081)
 
 # ─── Google Drive (optional — only required for `ingest.py --drive`) ───────
 GOOGLE_CLIENT_ID      = os.environ.get("GOOGLE_CLIENT_ID")

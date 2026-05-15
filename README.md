@@ -1,3 +1,14 @@
+---
+title: Viessmann RAG Chatbot
+emoji: 🔥
+colorFrom: red
+colorTo: gray
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: RAG chatbot over Viessmann technical PDFs (Croatian / English)
+---
+
 # Viessmann RAG Chatbot
 
 [![Release](https://img.shields.io/github/v/release/0NE-C0DEMAN/ViessmannChatbot?display_name=tag&sort=semver)](https://github.com/0NE-C0DEMAN/ViessmannChatbot/releases)
