@@ -98,35 +98,17 @@ function addUserMessage(text) {
   messagesEl.appendChild(div); scrollToBottom();
 }
 
-function addAssistantMessage(answer, sources, isError = false) {
+function addAssistantMessage(answer, _sources, isError = false) {
+  // Sources are intentionally NOT rendered in the UI — citations stay inline
+  // inside the answer text. (Backend still ships the `sources` array so eval
+  // and metrics can use it; the frontend just ignores it.)
   if (welcomeScreen) welcomeScreen.style.display = 'none';
   const div = document.createElement('div');
   div.className = 'message assistant';
-
-  let sourcesHtml = '';
-  if (sources && sources.length) {
-    const items = sources.map((s, i) => {
-      const page = s.page_number != null ? ` · p.${s.page_number}` : '';
-      const heading = s.section_heading ? ` — ${escapeHtml(s.section_heading)}` : '';
-      const table = s.has_table ? ' <span class="src-tag">table</span>' : '';
-      const rr = (s.rerank_score != null) ? `<span class="src-score">${s.rerank_score.toFixed(1)}</span>` : '';
-      return `<li>
-        ${rr}
-        <span class="src-file">${escapeHtml(s.file_name || '')}${page}</span>${heading}${table}
-      </li>`;
-    }).join('');
-    sourcesHtml = `
-      <details class="sources" open>
-        <summary>${sources.length} izvor${sources.length === 1 ? '' : 'a'}</summary>
-        <ol>${items}</ol>
-      </details>`;
-  }
-
   div.innerHTML = `
     <div class="msg-avatar">AI</div>
     <div class="msg-content">
       <div class="msg-bubble${isError ? ' msg-error' : ''}">${renderAnswer(answer)}</div>
-      ${sourcesHtml}
       <div class="msg-time">${getTime()}</div>
     </div>`;
   messagesEl.appendChild(div); scrollToBottom();
@@ -143,7 +125,7 @@ function showTyping() {
 function hideTyping() { document.getElementById('typingIndicator')?.remove(); }
 function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; }
 
-/* Streaming helpers — mount a fresh assistant bubble to fill as tokens arrive. */
+/* Mount a fresh assistant bubble to fill as tokens arrive. */
 function startStreamingMessage() {
   if (welcomeScreen) welcomeScreen.style.display = 'none';
   const div = document.createElement('div');
@@ -152,31 +134,11 @@ function startStreamingMessage() {
     <div class="msg-avatar">AI</div>
     <div class="msg-content">
       <div class="msg-bubble streaming"></div>
-      <div class="sources-slot"></div>
       <div class="msg-time">${getTime()}</div>
     </div>`;
   messagesEl.appendChild(div);
   scrollToBottom();
-  return {
-    bubble:      div.querySelector('.msg-bubble'),
-    sourcesSlot: div.querySelector('.sources-slot'),
-  };
-}
-
-function renderSourcesInto(slot, sources) {
-  if (!sources || !sources.length) return;
-  const items = sources.map((s) => {
-    const page = s.page_number != null ? ` · p.${s.page_number}` : '';
-    const heading = s.section_heading ? ` — ${escapeHtml(s.section_heading)}` : '';
-    const table = s.has_table ? ' <span class="src-tag">table</span>' : '';
-    const rr = (s.rerank_score != null) ? `<span class="src-score">${s.rerank_score.toFixed(1)}</span>` : '';
-    return `<li>${rr}<span class="src-file">${escapeHtml(s.file_name || '')}${page}</span>${heading}${table}</li>`;
-  }).join('');
-  slot.innerHTML = `
-    <details class="sources" open>
-      <summary>${sources.length} izvor${sources.length === 1 ? '' : 'a'}</summary>
-      <ol>${items}</ol>
-    </details>`;
+  return { bubble: div.querySelector('.msg-bubble') };
 }
 
 async function sendMessage() {
@@ -189,9 +151,8 @@ async function sendMessage() {
   addUserMessage(question);
   showTyping();
 
-  let mount = null;          // { bubble, sourcesSlot } — created on first event
+  let mount = null;          // { bubble } — created on first event
   let answerBuf = '';
-  let sourcesBuf = [];
 
   try {
     const r = await fetch(`${API_BASE}/api/chat/stream`, {
@@ -225,9 +186,10 @@ async function sendMessage() {
         try { ev = JSON.parse(raw.slice(5).trim()); } catch { continue; }
 
         if (ev.type === 'sources') {
-          sourcesBuf = ev.sources || [];
+          // Sources are intentionally not rendered — citations stay inline
+          // in the answer text. Mount the bubble early so the typing
+          // indicator clears as soon as retrieval finishes.
           if (!mount) { hideTyping(); mount = startStreamingMessage(); }
-          renderSourcesInto(mount.sourcesSlot, sourcesBuf);
         } else if (ev.type === 'token') {
           if (!mount) { hideTyping(); mount = startStreamingMessage(); }
           answerBuf += ev.content || '';
@@ -245,7 +207,7 @@ async function sendMessage() {
 
     if (!mount) {
       hideTyping();
-      addAssistantMessage('Nema odgovora.', sourcesBuf, true);
+      addAssistantMessage('Nema odgovora.', null, true);
       return;
     }
 
