@@ -171,30 +171,58 @@ def _diff_against_registry(
     """Returns (to_process, to_mark_deleted).
 
     A Drive file is processed when:
-      - it's new (not in registry), OR
-      - its md5 has changed since last ingest.
+      - it's new (no row matches its file_id OR its md5), OR
+      - its md5 has changed since last ingest (under the same file_id).
 
-    A registry row is marked deleted when:
-      - it isn't in Drive anymore AND
-      - it isn't already flagged deleted.
+    Critically, an md5 already present in the registry under a DIFFERENT
+    file_id is treated as "already ingested" and skipped. This makes
+    ingestion idempotent across re-keys — e.g. a corpus first loaded
+    with `--dir` (filename-stem file_ids) won't be re-embedded when the
+    same content is later pulled via `--drive` (Drive-API file_ids).
+
+    A registry row is marked deleted only when neither its file_id nor
+    its md5 appears in Drive — otherwise the content is still there,
+    just under a different key.
     """
-    registry_by_id = {r["file_id"]: r for r in registry if r.get("file_id")}
-    drive_by_id    = {f["id"]: f for f in drive_files}
+    drive_by_id     = {f["id"]: f for f in drive_files}
+    drive_md5s      = {f["md5Checksum"] for f in drive_files
+                       if f.get("md5Checksum")}
+    registry_by_id  = {r["file_id"]: r for r in registry if r.get("file_id")}
+    registry_by_md5 = {r["md5_checksum"]: r for r in registry
+                       if r.get("md5_checksum")}
 
     to_process: list[dict] = []
     for f in drive_files:
-        reg = registry_by_id.get(f["id"])
         md5 = f.get("md5Checksum") or ""
-        if not reg:
-            to_process.append(f)
-        elif reg.get("md5_checksum") != md5:
-            log.info("  modified: %s (md5 changed)", f.get("name"))
-            to_process.append(f)
+        reg_by_id = registry_by_id.get(f["id"])
 
+        # Case 1: same Drive file_id already registered.
+        if reg_by_id:
+            if reg_by_id.get("md5_checksum") != md5:
+                log.info("  re-ingest %s — md5 changed", f.get("name"))
+                to_process.append(f)
+            # else: same file_id + same md5 → no-op
+            continue
+
+        # Case 2: different file_id, but content already ingested under
+        # another key (e.g. originally from --dir). Skip embedding.
+        if md5 and md5 in registry_by_md5:
+            existing = registry_by_md5[md5]
+            log.info("  skip %s — content already ingested as %s (md5 match)",
+                     f.get("name"), existing.get("file_name"))
+            continue
+
+        # Case 3: truly new file (new id AND new content).
+        to_process.append(f)
+
+    # Deletion: row is "gone" only if BOTH its file_id and its md5 are
+    # absent from the current Drive listing. If a different file_id now
+    # carries the same content, we keep the old row — chunks are valid.
     to_delete = [
         r for r in registry
         if r.get("file_id")
            and r["file_id"] not in drive_by_id
+           and (r.get("md5_checksum") or "") not in drive_md5s
            and r.get("status") != "deleted"
     ]
     return to_process, to_delete

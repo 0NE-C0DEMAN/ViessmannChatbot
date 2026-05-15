@@ -59,6 +59,10 @@ viessmann-rag/
 
 ## Quick start
 
+> **Coming from the previous Viessmann processor?** Skip ahead to the
+> [Picking up an existing project](#picking-up-an-existing-project) section
+> — most setup is already done.
+
 ### 1 — Install
 
 ```powershell
@@ -74,10 +78,11 @@ copy .env.example .env
 notepad .env
 ```
 
-Fill in Supabase, OpenAI, and (for Drive ingest) Google OAuth keys. See
-[`.env.example`](.env.example) for what each variable means and where to get it.
+Fill in `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `OPENAI_API_KEY`, and
+`GOOGLE_ROOT_FOLDER_ID`. Then pick **one** Drive auth mode (the
+`.env.example` file walks through both, step by step).
 
-### 3 — Apply the Supabase migration
+### 3 — Apply the Supabase migration *(first-time projects only)*
 
 Open the SQL editor in your Supabase project:
 
@@ -86,11 +91,12 @@ https://supabase.com/dashboard/project/<your-project>/sql
 ```
 
 Paste the contents of [`migrations/001_initial_schema.sql`](migrations/001_initial_schema.sql)
-and click **Run**.
+and click **Run**. If Supabase warns about RLS, choose **"Run without RLS"** —
+the app only ever talks to the DB with the service-role key (server-side).
 
-If Supabase warns about RLS, choose **"Run without RLS"** — the app only ever
-talks to the database with the service-role key (server-side), so RLS policies
-aren't needed.
+> **If you're picking up an existing project**, the migration is already
+> applied — skip this step. See
+> [Picking up an existing project](#picking-up-an-existing-project) below.
 
 ### 4 — Ingest your PDFs
 
@@ -148,6 +154,47 @@ python chat_server.py
 
 Open <http://localhost:8081>. Login: `viessmann` / `carrier` (override via
 `CHAT_USERNAME` / `CHAT_PASSWORD` in `.env`).
+
+
+## Picking up an existing project
+
+If a colleague has already done the heavy lifting (migration applied + PDFs
+already ingested), your setup is much shorter. Bring these two files to the
+repo root — both are gitignored, so they only live on your machine:
+
+| File | Where to get it |
+|---|---|
+| `.env` | Copy your existing one, or recreate from `.env.example` with the same Supabase / OpenAI / Drive folder values. |
+| `google_service_account.json` *(if using service-account mode)* | Reuse the same JSON the rest of the team uses — it's tied to the Google Cloud project, not to a specific machine. |
+
+Then:
+
+```powershell
+py -3.11 -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python ingest.py --drive          # incremental — see below
+python chat_server.py
+```
+
+### Ingest is idempotent — it won't re-embed PDFs that are already done
+
+Every Drive file carries an `md5Checksum`. On each `--drive` run, the diff
+logic:
+
+- **Skips a PDF entirely** when its md5 is already present in
+  `document_registry_v2` (even if under a different `file_id` — e.g. if the
+  corpus was first ingested via `--dir` with filename-stem keys, then later
+  pulled via `--drive` with Drive-API file_ids, the content match is detected
+  and no embedding is re-paid).
+- **Re-embeds** a file only when its md5 has actually changed (real content
+  update).
+- **Marks deleted** only when a registry row's file_id *and* md5 are both
+  absent from the current Drive listing.
+
+So you can `python ingest.py --drive --loop` on a fresh checkout against an
+already-populated Supabase and it'll print "nothing to do" and exit each poll
+cycle — no surprise OpenAI charges.
 
 ## How retrieval works
 
