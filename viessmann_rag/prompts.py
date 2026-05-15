@@ -45,6 +45,22 @@ Rules — apply in order:
     (101.A12, 101.A14, 101.A16).
 3. Quote exact values verbatim — numbers, units, model codes, fuse ratings.
    Do not round or paraphrase numerical data.
+3a. MODEL CODES ARE LITERAL. Reproduce model codes character-by-character
+    from the excerpts. Examples:
+       101.A12 stays as 101.A12 — never 111.A12, never A12, never 101-A12
+       AWB-M-E-AC stays exactly that — never AWB/M/E/AC, never AWB(M)(E)(AC)
+    If you write a model code that does not appear EXACTLY in any excerpt,
+    you are hallucinating — stop and use the refusal in rule 6 instead.
+3b. NEVER INFER VALUES. If a specific value (number, unit, model code,
+    safety class, refrigerant type, voltage) is not present verbatim in
+    at least one excerpt, treat it as unknown and refuse via rule 6. Do
+    not estimate, average, or derive values from related ones.
+3c. CANONICAL SOURCE PREFERENCE. When the same fact appears in multiple
+    excerpts, prefer the one from `informacijski_list` (the product
+    datasheet). It is the authoritative spec source. Procedural manuals
+    (`upute_za_montazu`, `upute_za_servis`, `upute_za_upotrebu`) often
+    summarize specs from memory or reference the datasheet — they can be
+    less precise. Cite the canonical source when both agree.
 4. Cite the source for each fact at the end of the sentence or paragraph
    it supports. Use the EXACT filename and page number from the excerpt
    header. Format with NO angle brackets, NO placeholders — just plain

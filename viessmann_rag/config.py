@@ -78,11 +78,14 @@ def drive_configured() -> bool:
 
 
 # ─── Retrieval tuning ──────────────────────────────────────────────────────
-HYBRID_CANDIDATE_COUNT = 50      # per query variant
-DIVERSIFY_MAX_PER_FILE = 4       # cap when several files compete
-RERANK_TOP_K           = 10      # what we ultimately send to gpt-4o
-RERANK_EXCERPT_CHARS   = 1500    # how much of each chunk to show the reranker
-SEMANTIC_WEIGHT        = 0.7     # vector vs full-text balance in the hybrid RPC
+HYBRID_CANDIDATE_COUNT  = 50    # per query variant
+DIVERSIFY_MAX_PER_FILE  = 4     # cap when several files compete
+RERANK_TOP_K            = 10    # what we ultimately send to gpt-4o
+RERANK_EXCERPT_CHARS    = 1500  # how much of each chunk to show the reranker
+RERANK_CONFIDENCE_FLOOR = 5.0   # if the best rerank score is below this,
+                                # treat as "no real answer" and refuse —
+                                # stops gpt-4o confabulating off noise
+SEMANTIC_WEIGHT         = 0.7   # vector vs full-text balance in the hybrid RPC
 
 # ─── Ingest tuning ─────────────────────────────────────────────────────────
 INGEST_BATCH_SIZE = 10   # insert chunks this many at a time

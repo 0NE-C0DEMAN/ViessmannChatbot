@@ -90,7 +90,7 @@ def login(s: requests.Session) -> None:
 def ask(s: requests.Session, q: str) -> dict:
     t0 = time.time()
     r = s.post(f"{BASE}/api/chat",
-               json={"question": q, "history": []}, timeout=120)
+               json={"question": q, "history": []}, timeout=300)
     dt = time.time() - t0
     try:
         data = r.json()
