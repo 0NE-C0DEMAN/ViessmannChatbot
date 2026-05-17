@@ -128,7 +128,19 @@ def _build_chat_context(d: dict) -> tuple[str, str, list, str, list, dict]:
             "retrieved": 0, "top_rerank": None,
         }
 
-    context = "\n\n---\n\n".join(c["chunk_text"] for c in chunks)
+    # Strip the "[Document: filename.pdf · Page N]" header we add at ingest
+    # time. Frane's team doesn't want any document/page references in the
+    # answer — easiest way to guarantee that is to never show the model the
+    # filename in the first place. Combined with rule 4 in SYSTEM_PROMPT,
+    # this is belt-and-suspenders.
+    def _strip_doc_header(t: str) -> str:
+        if t.startswith("[Document:"):
+            nl = t.find("\n")
+            if nl != -1:
+                return t[nl + 1:]
+        return t
+
+    context = "\n\n---\n\n".join(_strip_doc_header(c["chunk_text"]) for c in chunks)
     user_msg = f"Dokumentacija (izvadci):\n\n{context}\n\nPitanje: {question}"
 
     return question, product_line, history, user_msg, sources_meta, {

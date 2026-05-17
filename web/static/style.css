@@ -506,3 +506,109 @@ main {
 @keyframes slideUp      { from { opacity: 0; transform: translateY(8px);  } to { opacity: 1; transform: translateY(0); } }
 @keyframes typingPulse  { 0%, 60%, 100% { transform: scale(1);   opacity: 0.4; }
                           30%           { transform: scale(1.3); opacity: 1;   } }
+
+/* ── Tablet ─────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  header { padding: 0 20px; height: 80px; }
+  .logo-img { height: 60px; }
+  main { padding: 0 16px; }
+}
+
+/* ── Phone ──────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Header — compact, badge hidden so logo + buttons fit on one row */
+  header {
+    padding: 0 12px;
+    height: 60px;
+  }
+  .logo-img { height: 40px; }
+  .header-right { gap: 8px; }
+  .header-badge { display: none; }   /* free up horizontal space */
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .refresh-btn { width: 34px; height: 32px; }   /* bigger touch target */
+
+  /* Main column — full-width on phone */
+  main { padding: 0 12px; max-width: 100%; }
+  #messages { padding: 20px 0 16px; gap: 16px; }
+
+  /* Welcome screen */
+  .welcome { padding: 32px 0; }
+  .welcome-icon { width: 52px; height: 52px; margin-bottom: 18px; }
+  .welcome-icon svg { width: 26px; height: 26px; }
+  .welcome h2 { font-size: 22px; }
+  .welcome p { font-size: 14px; margin-bottom: 24px; padding: 0 8px; }
+  .suggestions { gap: 8px; padding: 0 4px; }
+  .suggestion-btn {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  /* Messages — give bubbles more horizontal room, smaller avatar */
+  .message { gap: 10px; }
+  .msg-avatar {
+    width: 28px; height: 28px;
+    font-size: 11px;
+  }
+  .msg-content { max-width: 88%; }
+  .msg-bubble {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  .msg-time { font-size: 10px; }
+
+  /* Input — full bleed, larger send-button touch target */
+  .input-area { padding: 12px 0 20px; }
+  .input-area::before { left: -12px; right: -12px; }
+  #chatInput {
+    padding: 14px 16px;
+    height: 50px;
+    font-size: 16px;   /* prevents iOS zoom-on-focus */
+  }
+  #sendBtn { padding: 0 18px; }
+  #sendBtn svg { width: 20px; height: 20px; }
+  .input-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .input-hint { font-size: 10px; }
+  .powered-by { font-size: 10px; }
+
+  /* Login card — fills the screen with sensible margins */
+  .login-card {
+    max-width: 100%;
+    margin: 0 16px;
+    padding: 36px 28px;
+  }
+  .login-title { font-size: 20px; }
+  .login-field input { font-size: 16px; }   /* prevents iOS zoom-on-focus */
+
+  /* Drive sync panel + toast — full-width pinned to top, slide down */
+  .ingest-modal,
+  .ingest-toast {
+    top: auto;
+    bottom: 80px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
+
+  /* Typing indicator — match smaller message bubble */
+  .typing-dots { padding: 12px 16px; }
+}
+
+/* ── Very small phones (≤360px) ─────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .logo-img { height: 34px; }
+  .logout-btn { padding: 5px 8px; font-size: 9px; }
+  .msg-content { max-width: 92%; }
+  .msg-bubble { font-size: 13px; padding: 10px 12px; }
+}
