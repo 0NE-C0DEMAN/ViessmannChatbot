@@ -107,7 +107,16 @@ def classify(question: str) -> Intent:
             temperature=0,
             max_tokens=120,
         )
-        data = json.loads(resp.choices[0].message.content or "{}")
+        parsed = json.loads(resp.choices[0].message.content or "{}")
+        if isinstance(parsed, list):
+            data = {}
+            for item in parsed:
+                if isinstance(item, dict):
+                    data.update(item)
+        elif isinstance(parsed, dict):
+            data = parsed
+        else:
+            data = {}
     except QuotaExhausted:
         raise
     except Exception as e:

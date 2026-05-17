@@ -158,6 +158,8 @@ def _register_routes(app: Flask) -> None:
             "version":    __version__,
             "uptime_s":   int(time.time() - _STARTED_AT),
             "cache":      query_cache.stats(),
+            "provider":   LLM_PROVIDER,
+            "chat_model": CHAT_MODEL,
         })
 
     # ─── Auth ──────────────────────────────────────────────────────────

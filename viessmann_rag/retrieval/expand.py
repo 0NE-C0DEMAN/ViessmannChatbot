@@ -20,7 +20,7 @@ _SYSTEM = (
     "Given a technical question about Viessmann heating products "
     "(Vitocal heat pumps, Vitodens boilers), generate two alternative search "
     "queries to improve retrieval recall against Croatian technical PDFs.\n\n"
-    "Output JSON only, with these keys:\n"
+    "Output a SINGLE JSON OBJECT (not a list) with exactly these two keys:\n"
     '  {"croatian": "...", "keywords": "..."}\n\n'
     "- croatian: a natural Croatian translation/paraphrase of the question, "
     "using technical terms a Viessmann manual would use (e.g. 'toplinska "
@@ -46,7 +46,19 @@ def expand_query(question: str) -> list[str]:
             temperature=0,
             max_tokens=200,
         )
-        data = json.loads(resp.choices[0].message.content or "{}")
+        parsed = json.loads(resp.choices[0].message.content or "{}")
+        # Some smaller models (notably Gemini Flash-Lite) sometimes return a
+        # JSON array of single-key objects instead of one combined object.
+        # Merge into a dict so downstream `.get()` works either way.
+        if isinstance(parsed, list):
+            data = {}
+            for item in parsed:
+                if isinstance(item, dict):
+                    data.update(item)
+        elif isinstance(parsed, dict):
+            data = parsed
+        else:
+            data = {}
     except QuotaExhausted:
         # Propagate — caller (retrieve) decides whether to give up or fall
         # back to the original query. We never want to silently mask quota.

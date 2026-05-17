@@ -70,8 +70,31 @@ else:
 # (per ParkerJones config + Gemini API docs). Embeddings use gemini-embedding
 # with output_dimensionality=1536 so the column type stays vector(1536) —
 # both columns interchangeable at storage level.
-GEMINI_CHAT_MODEL      = os.environ.get("GEMINI_CHAT_MODEL", "gemma-4-26b-a4b-it")
-GEMINI_RERANK_MODEL    = os.environ.get("GEMINI_RERANK_MODEL", GEMINI_CHAT_MODEL)
+# Two-model split inside the Gemma family:
+#   - Gemma 4 26B A4B for the FINAL ANSWER. Best quality (matches gpt-4o
+#     on our eval). One call per question, so the mandatory thinking
+#     phase (~5-10s) is paid once.
+#   - Gemma 3 27B for the FOUR retrieval helpers (intent/expand/HyDE/
+#     rerank). No thinking phase (Gemma 3 is the previous, non-thinking
+#     generation) → ~1-2s each → ~4-8s total for the helpers.
+# Total expected per-question latency: ~10-15s end-to-end.
+#
+# Quota math (Gemini free tier, May 2026):
+#   - gemma-4-26b-a4b-it: 1,500 RPD → ~1,500 questions/day cap on answers
+#   - gemma-3-27b-it:    14,400 RPD → 4× helpers/q = 3,600 q/day cap
+# So the binding limit is the answer model at 1,500/day — plenty for a
+# few coworkers.
+#
+# Caveat: neither Gemma 3 nor Gemma 4 supports `responseMimeType:
+# application/json` on the Gemini API (it returns 400). Our gemini_client
+# detects gemma prefixes and drops that param; helper prompts already
+# enforce JSON structurally and the parsers tolerate fenced ```json blocks.
+GEMINI_CHAT_MODEL      = os.environ.get("GEMINI_CHAT_MODEL",   "gemma-4-26b-a4b-it")
+# Helpers want a non-thinking, JSON-mode-capable model. Gemma 3 is not
+# available on the free tier (verified via models.list API); only Gemma 4
+# is, and Gemma 4 always thinks. So helpers go to Gemini 2.5 Flash-Lite
+# (1,000 RPD, ~1s per call, native JSON mode). Answer stays on Gemma 4.
+GEMINI_RERANK_MODEL    = os.environ.get("GEMINI_RERANK_MODEL", "gemini-2.5-flash")
 GEMINI_EMBEDDING_MODEL = os.environ.get("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001")
 GEMINI_EMBEDDING_DIM   = 1536
 

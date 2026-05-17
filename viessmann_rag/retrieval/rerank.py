@@ -63,11 +63,20 @@ def rerank(
             temperature=0,
             max_tokens=600,
         )
-        data = json.loads(resp.choices[0].message.content or "{}")
+        parsed = json.loads(resp.choices[0].message.content or "{}")
+        # Tolerate {"scores":[...]} OR a bare list of {i,s} objects — some
+        # smaller models pick the latter shape even when the prompt asks
+        # for the former.
+        if isinstance(parsed, list):
+            score_items = parsed
+        elif isinstance(parsed, dict):
+            score_items = parsed.get("scores", [])
+        else:
+            score_items = []
         scores = {
             int(item["i"]): float(item["s"])
-            for item in data.get("scores", [])
-            if "i" in item and "s" in item
+            for item in score_items
+            if isinstance(item, dict) and "i" in item and "s" in item
         }
     except Exception as e:
         log.warning("Rerank failed (%s) — using hybrid ordering", e)

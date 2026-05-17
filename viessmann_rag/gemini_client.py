@@ -46,6 +46,31 @@ def _is_gemma(model: str) -> bool:
     return model.startswith("gemma")
 
 
+_JSON_FENCE_RE = re.compile(r"```(?:json)?\s*\n?(.*?)\n?```", re.DOTALL)
+
+
+def _extract_json_text(text: str) -> str:
+    """Return the inner JSON of a fenced block, or the first balanced {...},
+    or the input trimmed. Gemma models can't be put into native JSON mode
+    via the API, so they sometimes wrap output in ```json``` blocks or add
+    chatty prefixes. This makes downstream `json.loads(...)` calls work
+    regardless of which shape the model picks."""
+    m = _JSON_FENCE_RE.search(text)
+    if m:
+        return m.group(1).strip()
+    start = text.find("{")
+    if start != -1:
+        depth = 0
+        for i, c in enumerate(text[start:], start):
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[start:i + 1]
+    return text.strip()
+
+
 def _retry_after_seconds(err_body: str) -> float | None:
     """Pull 'retryDelay' out of a Gemini error body if present."""
     m = re.search(r'"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"', err_body)
@@ -208,6 +233,11 @@ def chat_completion(
         if response_format.get("type") == "json_object":
             generation_config["responseMimeType"] = "application/json"
 
+    # Gemma 4 is a "thinking" model — it emits intermediate reasoning
+    # parts flagged `"thought": true` before the real answer. We CAN'T
+    # disable that on Gemma 4 (the API rejects thinkingConfig for it), but
+    # we filter thought parts out of the response below so the UI only
+    # ever sees the final answer text.
     body: dict[str, Any] = {
         "contents":         contents,
         "generationConfig": generation_config,
@@ -223,7 +253,15 @@ def chat_completion(
         return _Response(choices=[_Choice(_Message(""), "stop")])
     cand = candidates[0]
     parts = cand.get("content", {}).get("parts") or []
-    text = "".join(p.get("text", "") for p in parts)
+    # Filter thought parts — never surface intermediate reasoning.
+    text = "".join(p.get("text", "") for p in parts if not p.get("thought"))
+
+    # When JSON output was asked for AND we're on a Gemma model (no native
+    # JSON mode), extract the JSON payload so downstream json.loads works.
+    if response_format and response_format.get("type") == "json_object" \
+            and _is_gemma(model):
+        text = _extract_json_text(text)
+
     finish = cand.get("finishReason", "stop").lower()
     return _Response(choices=[_Choice(_Message(text), finish)])
 
@@ -280,6 +318,10 @@ def chat_stream(
                 continue
             for cand in ev.get("candidates") or []:
                 for part in cand.get("content", {}).get("parts") or []:
+                    # Skip thought parts — these are Gemma 4's intermediate
+                    # reasoning, never meant for the chat UI.
+                    if part.get("thought"):
+                        continue
                     text = part.get("text")
                     if text:
                         yield text
