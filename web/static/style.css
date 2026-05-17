@@ -22,7 +22,12 @@ body {
   color: var(--text);
   font-family: 'Barlow', sans-serif;
   font-weight: 400;
+  /* 100vh on mobile is the FULL viewport including the area behind the
+     browser URL bar — that pushes the input area below the visible
+     screen. 100dvh follows the dynamic viewport (URL bar shown/hidden)
+     so the input stays inside the visible area. 100vh kept as fallback. */
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -562,8 +567,13 @@ main {
   }
   .msg-time { font-size: 10px; }
 
-  /* Input — full bleed, larger send-button touch target */
-  .input-area { padding: 12px 0 20px; }
+  /* Input — full bleed, larger send-button touch target.
+     env(safe-area-inset-bottom) accounts for the iOS home indicator;
+     without it the input bottom sits behind the rounded-corner bar on
+     newer iPhones. */
+  .input-area {
+    padding: 12px 0 calc(20px + env(safe-area-inset-bottom, 0px));
+  }
   .input-area::before { left: -12px; right: -12px; }
   #chatInput {
     padding: 14px 16px;
@@ -590,11 +600,14 @@ main {
   .login-title { font-size: 20px; }
   .login-field input { font-size: 16px; }   /* prevents iOS zoom-on-focus */
 
-  /* Drive sync panel + toast — full-width pinned to top, slide down */
+  /* Drive sync panel + toast — pin just below the mobile header. The
+     earlier `bottom: 80px` overlapped the input area (which is ~100px
+     tall on phones), making the input look "cut" while a sync was
+     running. */
   .ingest-modal,
   .ingest-toast {
-    top: auto;
-    bottom: 80px;
+    top: 72px;
+    bottom: auto;
     left: 12px;
     right: 12px;
     width: auto;
