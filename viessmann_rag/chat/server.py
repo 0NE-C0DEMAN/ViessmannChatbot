@@ -29,16 +29,16 @@ from flask_cors import CORS
 from .. import __version__
 from ..cache import cache as query_cache
 from ..config import (
-    CHAT_MODEL,
     CHAT_PASSWORD,
     CHAT_PORT,
     CHAT_USERNAME,
     FLASK_SECRET_KEY,
+    LLM_PROVIDER,
     WEB_DIR,
 )
+from ..llm import CHAT_MODEL, QuotaExhausted, chat_completion, chat_stream
 from ..logging_setup import configure
 from ..metrics import record as metric
-from ..openai_client import QuotaExhausted, chat_completion, client as openai_client
 from ..prompts import NO_CONTEXT_REPLY, SYSTEM_PROMPT
 from ..retrieval import retrieve
 
@@ -358,24 +358,22 @@ def _register_routes(app: Flask) -> None:
             # 1. Sources event first
             yield _sse({"type": "sources", "sources": sources_meta})
 
-            # 2. Token stream from OpenAI
+            # 2. Token stream — chat_stream() iterates delta strings.
+            #    Same interface for both providers (see llm.py).
             collected: list[str] = []
             try:
-                stream = openai_client.chat.completions.create(
+                for delta in chat_stream(
                     model=CHAT_MODEL, messages=messages,
-                    temperature=0.1, max_tokens=900, stream=True,
-                )
-                for chunk in stream:
-                    delta = (chunk.choices[0].delta.content
-                             if chunk.choices else None)
-                    if delta:
-                        collected.append(delta)
-                        yield _sse({"type": "token", "content": delta})
+                    temperature=0.1, max_tokens=900,
+                ):
+                    collected.append(delta)
+                    yield _sse({"type": "token", "content": delta})
             except QuotaExhausted:
                 yield _sse({"type": "error", **_QUOTA_BODY})
                 return
             except Exception as e:
-                log.error("Stream OpenAI error: %s", e, exc_info=True)
+                log.error("Stream LLM error (%s): %s",
+                          LLM_PROVIDER, e, exc_info=True)
                 yield _sse({"type": "error",
                             "error": "Greška pri generiranju odgovora."})
                 return

@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Optional
 
 from ..config import SEMANTIC_WEIGHT
-from ..openai_client import embed
+from ..llm import SEARCH_RPC, embed_query
 from ..supabase_client import call_rpc
 
 
@@ -28,9 +28,9 @@ def hybrid_search(
     document_type, page_number, section_heading, chunk_text, has_table,
     semantic_score, keyword_score, hybrid_score.
     """
-    q_emb = embed(question)
+    q_emb = embed_query(question)
     return call_rpc(
-        "search_chunks_v2",
+        SEARCH_RPC,
         {
             "q_embedding":     q_emb,
             "q_text":          question,

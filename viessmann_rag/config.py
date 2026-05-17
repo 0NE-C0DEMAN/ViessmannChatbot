@@ -33,14 +33,47 @@ def _required(name: str) -> str:
 SUPABASE_URL          = _required("SUPABASE_URL")
 SUPABASE_SERVICE_KEY  = _required("SUPABASE_SERVICE_KEY")
 
-# ─── OpenAI ────────────────────────────────────────────────────────────────
-OPENAI_API_KEY        = _required("OPENAI_API_KEY")
+# ─── LLM provider switch ───────────────────────────────────────────────────
+# "openai"  → gpt-4o + text-embedding-3-small  (default, paid)
+# "gemini"  → gemma-4-26b-a4b-it + gemini-embedding-001  (free tier)
+# Picked once at process start so retrieval + ingest + chat all agree.
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openai").lower()
+if LLM_PROVIDER not in ("openai", "gemini"):
+    raise SystemExit(f"LLM_PROVIDER must be 'openai' or 'gemini', got: {LLM_PROVIDER}")
 
-# Models — change here, not in business logic
-EMBEDDING_MODEL = "text-embedding-3-small"   # 1536-dim, matches migration.sql
-RERANK_MODEL    = "gpt-4o-mini"              # cheap, fast, good enough
-EXPAND_MODEL    = "gpt-4o-mini"              # multi-query expansion
-CHAT_MODEL      = "gpt-4o"                   # final answer generation
+# When INGEST_DUAL=true, every ingest run embeds each chunk with BOTH
+# providers and writes to both columns. Lets us hot-swap LLM_PROVIDER later
+# without re-ingesting. Free-side cost is ~0; OpenAI side adds the usual
+# ~$0.00004/page when its column is still empty.
+INGEST_DUAL = os.environ.get("INGEST_DUAL", "false").lower() in ("1", "true", "yes")
+
+# ─── OpenAI ────────────────────────────────────────────────────────────────
+# Required when LLM_PROVIDER=openai OR INGEST_DUAL=true. Optional otherwise.
+if LLM_PROVIDER == "openai" or INGEST_DUAL:
+    OPENAI_API_KEY = _required("OPENAI_API_KEY")
+else:
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+
+EMBEDDING_MODEL = "text-embedding-3-small"   # 1536-dim, OpenAI side
+RERANK_MODEL    = "gpt-4o-mini"
+EXPAND_MODEL    = "gpt-4o-mini"
+CHAT_MODEL      = "gpt-4o"
+
+# ─── Gemini ────────────────────────────────────────────────────────────────
+# Required when LLM_PROVIDER=gemini OR INGEST_DUAL=true. Optional otherwise.
+if LLM_PROVIDER == "gemini" or INGEST_DUAL:
+    GEMINI_API_KEY = _required("GEMINI_API_KEY")
+else:
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+
+# Gemma 4 26B A4B is Google's "highest free-tier rate limits" recommendation
+# (per ParkerJones config + Gemini API docs). Embeddings use gemini-embedding
+# with output_dimensionality=1536 so the column type stays vector(1536) —
+# both columns interchangeable at storage level.
+GEMINI_CHAT_MODEL      = os.environ.get("GEMINI_CHAT_MODEL", "gemma-4-26b-a4b-it")
+GEMINI_RERANK_MODEL    = os.environ.get("GEMINI_RERANK_MODEL", GEMINI_CHAT_MODEL)
+GEMINI_EMBEDDING_MODEL = os.environ.get("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001")
+GEMINI_EMBEDDING_DIM   = 1536
 
 # ─── Chat server ───────────────────────────────────────────────────────────
 CHAT_USERNAME    = os.environ.get("CHAT_USERNAME", "viessmann")

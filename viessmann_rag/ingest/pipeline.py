@@ -11,13 +11,29 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from ..config import INGEST_BATCH_SIZE
-from ..openai_client import embed
+from ..config import INGEST_BATCH_SIZE, INGEST_DUAL, LLM_PROVIDER
+from ..llm import embed as active_embed
 from ..pdf_parser import extract_pdf
 from ..supabase_client import delete_chunks, insert_chunks, upsert_registry
 from .metadata import md5_bytes, parse_metadata
 
 log = logging.getLogger("ingest")
+
+# Active provider column vs. the "other" column (for INGEST_DUAL mode).
+# Resolved once at import — cheaper than checking per chunk.
+ACTIVE_COL   = "embedding_gem" if LLM_PROVIDER == "gemini" else "embedding"
+INACTIVE_COL = "embedding" if LLM_PROVIDER == "gemini" else "embedding_gem"
+
+
+def _inactive_embed_fn():
+    """Lazy import of the *other* provider's embed(). Only used when
+    INGEST_DUAL=true — otherwise we never load the unused SDK."""
+    if LLM_PROVIDER == "gemini":
+        from ..openai_client import embed as oai_embed
+        return oai_embed
+    else:
+        from ..gemini_client import embed as gem_embed
+        return gem_embed
 
 
 def _truncate_id(file_id: str) -> str:
@@ -71,7 +87,10 @@ def process_pdf_bytes(
         "last_processed_at": datetime.now(timezone.utc).isoformat(),
     })
 
-    # 4. Embed + insert in batches
+    # 4. Embed + insert in batches. In dual mode we also embed with the
+    #    inactive provider so both columns are populated in one pass.
+    inactive_embed = _inactive_embed_fn() if INGEST_DUAL else None
+
     batch: list[dict] = []
     stored = 0
     for p in pages:
@@ -82,12 +101,12 @@ def process_pdf_bytes(
         chunk_text = f"[Document: {file_name} · Page {p.page_number}]\n{p.text}"
 
         try:
-            emb = embed(chunk_text)
+            emb_active = active_embed(chunk_text)
         except Exception as e:
-            log.error("  p.%d embed failed: %s", p.page_number, e)
+            log.error("  p.%d active embed failed: %s", p.page_number, e)
             continue
 
-        batch.append({
+        row = {
             "file_id":         file_id,
             "file_name":       file_name,
             "product_line":    product_line,
@@ -97,8 +116,19 @@ def process_pdf_bytes(
             "chunk_text":      chunk_text,
             "has_table":       p.has_table,
             "token_estimate":  p.char_count // 4,
-            "embedding":       emb,
-        })
+            ACTIVE_COL:        emb_active,
+        }
+
+        if inactive_embed is not None:
+            try:
+                row[INACTIVE_COL] = inactive_embed(chunk_text)
+            except Exception as e:
+                # Don't fail the whole page on a dual-mode hiccup — the row
+                # still gets the active embedding and can be topped up later.
+                log.warning("  p.%d inactive embed failed (%s): %s",
+                            p.page_number, INACTIVE_COL, e)
+
+        batch.append(row)
         stored += 1
 
         if len(batch) >= INGEST_BATCH_SIZE:
@@ -109,4 +139,5 @@ def process_pdf_bytes(
     if batch:
         insert_chunks(batch)
 
-    log.info("  ✓ stored %d / %d pages", stored, len(pages))
+    log.info("  ✓ stored %d / %d pages (dual=%s)",
+             stored, len(pages), INGEST_DUAL)

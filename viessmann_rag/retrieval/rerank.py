@@ -9,8 +9,8 @@ from __future__ import annotations
 import json
 import logging
 
-from ..config import RERANK_EXCERPT_CHARS, RERANK_MODEL, RERANK_TOP_K
-from ..openai_client import chat_completion
+from ..config import RERANK_EXCERPT_CHARS, RERANK_TOP_K
+from ..llm import RERANK_MODEL, chat_completion
 
 log = logging.getLogger("retrieval")
 

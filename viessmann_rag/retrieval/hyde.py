@@ -22,8 +22,7 @@ from __future__ import annotations
 
 import logging
 
-from ..config import EXPAND_MODEL
-from ..openai_client import QuotaExhausted, chat_completion
+from ..llm import EXPAND_MODEL, QuotaExhausted, chat_completion
 
 log = logging.getLogger("retrieval")
 

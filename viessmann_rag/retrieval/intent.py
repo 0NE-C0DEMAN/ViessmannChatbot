@@ -27,8 +27,7 @@ import json
 import logging
 from dataclasses import dataclass
 
-from ..config import EXPAND_MODEL
-from ..openai_client import QuotaExhausted, chat_completion
+from ..llm import EXPAND_MODEL, QuotaExhausted, chat_completion
 
 log = logging.getLogger("retrieval")
 
