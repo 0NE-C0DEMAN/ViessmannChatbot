@@ -1,0 +1,1667 @@
+{
+  "Q01": {
+    "id": "Q01",
+    "q": "What is the COP of model 101.A12 at A7/W35?",
+    "truth": "4,70",
+    "category": "single_value",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.426,
+        "page_number": 106,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.423,
+        "page_number": 102,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.414,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.412,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.412,
+        "page_number": 12,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.41,
+        "page_number": 9,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.408,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.408,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.399,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": null
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.378,
+        "page_number": 6,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      }
+    ],
+    "_elapsed_s": 2.48,
+    "_status": 200
+  },
+  "Q02": {
+    "id": "Q02",
+    "q": "What is the maximum supply water temperature for Vitocal 100-S?",
+    "truth": "55°C (A-series 101.A12-A16), 58°C (B-series 101.B04-B08)",
+    "category": "multi_variant",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.485,
+        "page_number": 84,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.48,
+        "page_number": 86,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.478,
+        "page_number": 87,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.477,
+        "page_number": 85,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.477,
+        "page_number": 89,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.476,
+        "page_number": 82,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.475,
+        "page_number": 86,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.466,
+        "page_number": 60,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Isključivanje i uključivanje"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.32,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.316,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      }
+    ],
+    "_elapsed_s": 2.39,
+    "_status": 200
+  },
+  "Q03": {
+    "id": "Q03",
+    "q": "What is the sound power level (dB(A)) of the Vitocal 100-S outdoor units?",
+    "truth": "62 dB(A) for 101.B04 and 101.B06, 64 dB(A) for 101.B08, 101.A12, 101.A14, 101.A16",
+    "category": "table_continuation",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.424,
+        "page_number": 96,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.42,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.416,
+        "page_number": 99,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.413,
+        "page_number": 110,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.412,
+        "page_number": 9,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.411,
+        "page_number": 69,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Što se mora učiniti?"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.411,
+        "page_number": 60,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Isključivanje i uključivanje"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.398,
+        "page_number": 6,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.371,
+        "page_number": 5,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.28,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      }
+    ],
+    "_elapsed_s": 2.33,
+    "_status": 200
+  },
+  "Q04": {
+    "id": "Q04",
+    "q": "Compare the SCOP at W35 for B-series and A-series Vitocal 100-S models.",
+    "truth": "B-series: 4.45 / 4.45 / 4.46; A-series: 4.08 / 4.08 / 3.95",
+    "category": "comparison",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.439,
+        "page_number": 112,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.437,
+        "page_number": 108,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.436,
+        "page_number": 12,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.436,
+        "page_number": 60,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Isključivanje i uključivanje"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.435,
+        "page_number": 64,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Isključivanje i uključivanje"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.435,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.434,
+        "page_number": 100,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.43,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.391,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.371,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      }
+    ],
+    "_elapsed_s": 2.05,
+    "_status": 200
+  },
+  "Q05": {
+    "id": "Q05",
+    "q": "Which refrigerant safety group does each variant use?",
+    "truth": "R32 → A2L (B-series). R410A → A1 (A-series)",
+    "category": "multi_variant",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.479,
+        "page_number": 12,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.476,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.469,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za upotrebu                                   VIESMANN"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.469,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za upotrebu                                   VIESMANN"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.465,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.462,
+        "page_number": 109,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.457,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": null
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.456,
+        "page_number": 83,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.423,
+        "page_number": 3,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Sigurnosne upute"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.417,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      }
+    ],
+    "_elapsed_s": 2.03,
+    "_status": 200
+  },
+  "Q06": {
+    "id": "Q06",
+    "q": "What is GWP and what are the values for R32 and R410A?",
+    "truth": "GWP = Global Warming Potential. R32: 675. R410A: 1924.",
+    "category": "domain_knowledge",
+    "answer": "\"Podatak nije pronađen u priloženoj dokumentaciji.\"",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.435,
+        "page_number": 91,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.432,
+        "page_number": 94,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.429,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.427,
+        "page_number": 100,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.426,
+        "page_number": 5,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.425,
+        "page_number": 107,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.42,
+        "page_number": 5,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.42,
+        "page_number": 108,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.317,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": true,
+        "hybrid_score": 0.213,
+        "page_number": 7,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      }
+    ],
+    "_elapsed_s": 2.08,
+    "_status": 200
+  },
+  "Q07": {
+    "id": "Q07",
+    "q": "Which Vitocal 100-S variants support active cooling?",
+    "truth": "AWB-E-AC, AWB-M-E-AC variants (both .A and .B)",
+    "category": "capability",
+    "answer": "The Vitocal 100-S variants that support active cooling are the AWB(-M)-E-AC 101.A04 to A16.",
+    "sources": [
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.316,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 10.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.456,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 7.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.461,
+        "page_number": 99,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.461,
+        "page_number": 96,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.46,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.46,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.456,
+        "page_number": 109,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.451,
+        "page_number": 109,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.451,
+        "page_number": 9,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.323,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      }
+    ],
+    "_elapsed_s": 2.04,
+    "_status": 200
+  },
+  "Q08": {
+    "id": "Q08",
+    "q": "What is the difference between type AWB-M and type AWB-M-E?",
+    "truth": "AWB-M-E adds integrated electric flow heater",
+    "category": "capability",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.472,
+        "page_number": 102,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.454,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.453,
+        "page_number": 12,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.449,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.447,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.446,
+        "page_number": 105,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.439,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": null
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.438,
+        "page_number": 109,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.432,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.189,
+        "page_number": 4,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      }
+    ],
+    "_elapsed_s": 2.05,
+    "_status": 200
+  },
+  "Q09": {
+    "id": "Q09",
+    "q": "List all the type variants of Vitocal 100-S.",
+    "truth": "9 variants in the type-overview table",
+    "category": "enumeration",
+    "answer": "The type variants of Vitocal 100-S are:\n\n- AWB 101.A\n- AWB-M 101.A\n- AWB-E 101.A\n- AWB-M-E 101.A\n- AWB-E-AC 101.A\n- AWB-M-E-AC 101.A",
+    "sources": [
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.433,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 8.0,
+        "section_heading": null
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.463,
+        "page_number": 81,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.457,
+        "page_number": 105,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.456,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.453,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.452,
+        "page_number": 38,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Priprema potrošne tople vode"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": true,
+        "hybrid_score": 0.447,
+        "page_number": 7,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.444,
+        "page_number": 113,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.438,
+        "page_number": 100,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.435,
+        "page_number": 5,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      }
+    ],
+    "_elapsed_s": 2.05,
+    "_status": 200
+  },
+  "Q10": {
+    "id": "Q10",
+    "q": "Koja je dimenzija unutarnje jedinice?",
+    "truth": "370 × 450 × 880 mm (svi tipovi)",
+    "category": "croatian",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.457,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.455,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.454,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.449,
+        "page_number": 109,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.446,
+        "page_number": 7,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.446,
+        "page_number": 85,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.445,
+        "page_number": 7,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.444,
+        "page_number": 64,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Isključivanje i uključivanje"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.443,
+        "page_number": 105,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.388,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      }
+    ],
+    "_elapsed_s": 2.03,
+    "_status": 200
+  },
+  "Q11": {
+    "id": "Q11",
+    "q": "Kolika je minimalna temperatura ulaza zraka za grijanje?",
+    "truth": "-20°C za B-seriju, -22°C za A-seriju",
+    "category": "croatian_multi",
+    "answer": "Minimalna temperatura ulaza zraka za grijanje je:\n\n- Za modele serije B (230 V~): –20 °C (za modele 101.B04, 101.B06, 101.B08)\n- Za modele serije A (230 V~): –22 °C (za modele 101.A12, 101.A14, 101.A16)",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.462,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 8.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.478,
+        "page_number": 106,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.474,
+        "page_number": 102,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.47,
+        "page_number": 100,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.467,
+        "page_number": 112,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": true,
+        "hybrid_score": 0.467,
+        "page_number": 7,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.466,
+        "page_number": 106,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.464,
+        "page_number": 9,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.461,
+        "page_number": 110,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.444,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      }
+    ],
+    "_elapsed_s": 2.05,
+    "_status": 200
+  },
+  "Q12": {
+    "id": "Q12",
+    "q": "Tell me about model Vitodens 200.",
+    "truth": "REFUSE — not in informacijski_list",
+    "category": "refusal",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.444,
+        "page_number": 4,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.441,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.439,
+        "page_number": 97,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.437,
+        "page_number": 82,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.435,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": null
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.434,
+        "page_number": 91,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.43,
+        "page_number": 100,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.429,
+        "page_number": 81,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.395,
+        "page_number": 85,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.388,
+        "page_number": 7,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      }
+    ],
+    "_elapsed_s": 2.04,
+    "_status": 200
+  },
+  "Q13": {
+    "id": "Q13",
+    "q": "What is the warranty period for Vitocal 100-S?",
+    "truth": "REFUSE — not in this document",
+    "category": "refusal",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.426,
+        "page_number": 107,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.413,
+        "page_number": 103,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.413,
+        "page_number": 2,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Sigurnosne upute"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.408,
+        "page_number": 5,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.408,
+        "page_number": 67,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Radovi održavanja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.406,
+        "page_number": 71,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Radovi održavanja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.403,
+        "page_number": 110,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": null
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.4,
+        "page_number": 70,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Radovi održavanja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.4,
+        "page_number": 86,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.396,
+        "page_number": 102,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      }
+    ],
+    "_elapsed_s": 2.04,
+    "_status": 200
+  },
+  "Q14": {
+    "id": "Q14",
+    "q": "What is the price of Vitocal 100-S type AWB-M 101.B08?",
+    "truth": "REFUSE — see price list",
+    "category": "refusal",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.435,
+        "page_number": 101,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.431,
+        "page_number": 109,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Kazalo"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.43,
+        "page_number": 110,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": null
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.43,
+        "page_number": 66,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Radovi održavanja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.427,
+        "page_number": 70,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Radovi održavanja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.427,
+        "page_number": 105,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.425,
+        "page_number": 90,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.415,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.402,
+        "page_number": 1,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Upute  za montažu  i servisiranje                    VIESMANN"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.38,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      }
+    ],
+    "_elapsed_s": 2.06,
+    "_status": 200
+  },
+  "Q15": {
+    "id": "Q15",
+    "q": "Among the 101.B variants at A2/W35, which has the highest COP?",
+    "truth": "101.B04 with COP 3.84",
+    "category": "reasoning",
+    "answer": "Podatak nije pronađen u priloženoj dokumentaciji.",
+    "sources": [
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.466,
+        "page_number": 11,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.465,
+        "page_number": 12,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.447,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Prve informacije"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.442,
+        "page_number": 99,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.442,
+        "page_number": 96,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Dodatak"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.441,
+        "page_number": 7,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Popis sadržaja"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "5830256_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.44,
+        "page_number": 60,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Isključivanje i uključivanje"
+      },
+      {
+        "document_type": "upute_za_upotrebu",
+        "file_name": "6150244_Vitocal_100-S_upute_za_upotrebu.pdf",
+        "has_table": false,
+        "hybrid_score": 0.438,
+        "page_number": 62,
+        "product_line": "Vitocal 100-S upute za upotrebu",
+        "rerank_score": 0.0,
+        "section_heading": "Ručni pogon"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.43,
+        "page_number": 8,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": "Informacija"
+      },
+      {
+        "document_type": "upute_za_servis",
+        "file_name": "5833724_Vitocal_100-S_upute_za_servis.pdf",
+        "has_table": false,
+        "hybrid_score": 0.416,
+        "page_number": 10,
+        "product_line": "Vitocal 100-S upute za servis",
+        "rerank_score": 0.0,
+        "section_heading": null
+      }
+    ],
+    "_elapsed_s": 2.03,
+    "_status": 200
+  }
+}
